@@ -132,7 +132,7 @@ export default function Map() {
     }
   }, []);
   return (
-    <div className="relative overflow-hidden  pt-60 md:pt-40">
+    <div className="relative  pt-80 md:pt-60 lg:pt-96">
       {/* Big background absolute div with mask */}
       <div
         className="w-full h-full relative  bg-cover bg-center "
@@ -157,11 +157,11 @@ export default function Map() {
         <img src="/img/npc.png" id="bigIconImg" />
       </div>
       <div
-        className="absolute left-0 right-0 bottom-0 px-4 mx-auto z-2"
+        className="absolute left-0 right-0 z-2 mx-auto px-4"
         style={{
           width: "clamp(798px, 83.125vw, 1596px)",
-          height: "auto",
-          maxHeight: "100vh", // Prevents it from exceeding viewport height
+
+          bottom: "calc(var(--size-160)* 2)",
         }}
       >
         <div className="relative map-cont w-fit flex mx-auto ">
@@ -243,7 +243,16 @@ export default function Map() {
                   height: "clamp(43px,5vw,96px)",
                   margin: "var(--size-110) calc(var(--size-80) * 2) 0 auto",
                 }}
-              />
+              >
+                <img
+                  src="/img/title03.png"
+                  className="w-auto max-w-full align-middle object-cover"
+                  style={{
+                    marginTop: "var(--size-10-)",
+                    marginLeft: "calc(var(--size-160) * 1.5)",
+                  }}
+                />
+              </div>
               <div
                 className={`relative maps-banner ${bannerActive ? "on" : ""}`}
                 style={{ marginTop: "var(--size-60)", zIndex: 3 }}
