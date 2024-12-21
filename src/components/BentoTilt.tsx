@@ -18,7 +18,7 @@ export default function BentoTilt({
     const relativeY = (e.clientY - top) / height;
     const tiltX = (relativeX - 0.5) * 5; // Tilt intensity can be adjusted
     const tiltY = (relativeY - 0.5) * -5;
-    const newTransform = `perspective(700px) rotateX(${tiltY}deg) rotateY(${tiltX}deg) `;
+    const newTransform = `perspective(700px) rotateX(${tiltY}deg) rotateY(${tiltX}deg) scale3d(.98, .98, .98) `;
     setTransformStyle(newTransform);
   }
   function handleMouseLeave() {
