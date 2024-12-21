@@ -65,7 +65,7 @@ export default function Map() {
     gsap.to("body", {
       backgroundColor: "#e3e3e3", // Background color when scrolling down
 
-      ease: "power2.out",
+      ease: "power1.out",
       scrollTrigger: {
         trigger: ".maps-hd",
         start: "top bottom", // When the top of `.maps-hd` hits the bottom of the viewport
@@ -76,7 +76,7 @@ export default function Map() {
           gsap.to("body", {
             backgroundColor: "black",
 
-            ease: "power2.out",
+            ease: "power1.out",
           });
         },
       },

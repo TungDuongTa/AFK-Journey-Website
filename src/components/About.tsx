@@ -24,10 +24,10 @@ export default function About() {
         "body",
         {
           backgroundColor: "black",
-          duration: 0.5,
+          duration: 0.1,
           ease: "none",
         },
-        "-=0.5"
+        "-=0.1"
       ); // Overlap slightly with the previous animation
   }, []);
   return (
