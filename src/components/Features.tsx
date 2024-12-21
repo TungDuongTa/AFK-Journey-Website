@@ -26,7 +26,7 @@ export default function Features() {
           scrollTrigger: {
             trigger: element,
             start: "top bottom", // Animation starts when the top of the element meets the bottom of the viewport
-            toggleActions: "play none none reset", // Change this to allow replaying
+            toggleActions: "play none none reverse", // Change this to allow replaying
           },
         }
       );
