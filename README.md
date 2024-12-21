@@ -21,3 +21,13 @@ To set up this project locally, follow these steps:
 1. Clone the repository:
    ```bash
    git clone https://github.com/your-username/afk-journey-website.git
+2. Navigate into the project directory:
+   ```bash
+   cd afk-journey-website
+3. Install the dependencies:
+   ```bash
+   npm install
+4. Run the project:
+   ```bash
+   npm run dev
+   
