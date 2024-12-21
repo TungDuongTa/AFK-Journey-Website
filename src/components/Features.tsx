@@ -57,7 +57,7 @@ export default function Features() {
                 className="object-cover object-center"
               />
               <h1 className="absolute top-5 left-5 z-10 bento-title special-font text-blue-50">
-                More Coming
+                More <br /> Coming <br /> Soon
               </h1>
             </div>
           </BentoTilt>
