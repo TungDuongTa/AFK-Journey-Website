@@ -15,10 +15,20 @@ export default function About() {
         pinSpacing: true,
       },
     });
-    clipAnimation.to(".mask-clip-path", {
-      width: "105vw",
-      height: "100vh",
-    });
+    clipAnimation
+      .to(".mask-clip-path", {
+        width: "105vw",
+        height: "100vh",
+      })
+      .to(
+        "body",
+        {
+          backgroundColor: "black",
+          duration: 0.5,
+          ease: "none",
+        },
+        "-=0.5"
+      ); // Overlap slightly with the previous animation
   }, []);
   return (
     <div id="about" className="min-h-screen w-screen ">

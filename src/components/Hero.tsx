@@ -89,50 +89,76 @@ export default function Hero() {
     });
   }, []);
   //
+  const [isMouseOver, setIsMouseOver] = useState(false); // Track whether mouse is over the video
   const hoverElementRef = useRef<HTMLDivElement>(null);
   const videoContainerRef = useRef<HTMLDivElement>(null);
-  useGSAP(() => {
-    const element = hoverElementRef.current;
+  const containerRef = useRef<HTMLDivElement>(null); // This will track mouse on the container
+  const [transformStyle, setTransformStyle] = useState<string>("");
+  const [transformStyle1, setTransformStyle1] = useState<string>("");
+  const [isMouseStopped, setIsMouseStopped] = useState(false);
+  const timeoutRef = useRef<number | null>(null);
+  // Tilt effect logic
 
-    if (!element) return;
+  const element = hoverElementRef.current;
+  const container = containerRef.current;
 
-    const handleMouseEnter = () => {
-      // Create a GSAP timeline for repeating scale animation
+  const handleMouseMove: React.MouseEventHandler<HTMLDivElement> = (event) => {
+    if (!element || !container) return;
 
-      gsap.fromTo(
-        element,
-        {
-          scale: 0.8,
-        },
-        {
-          scale: 1,
-          duration: 1,
-          ease: "power1.inOut",
-          yoyo: true,
-          repeat: -1,
-        }
-      );
-    };
+    // Clear previous timeout and reset scaling when mouse moves
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+    }
+    // Set the state to false when the mouse is moving
+    if (isMouseStopped) {
+      setIsMouseStopped(false); // Mouse has started moving again
+    }
 
-    const handleMouseLeave = () => {
-      gsap.to(element, {
-        scale: 0, // Reset scale
-        duration: 0.5,
-        ease: "power1.inOut",
-      });
-    };
+    // Set a timeout to detect when the mouse stops
+    timeoutRef.current = setTimeout(() => {
+      setIsMouseStopped(true);
+    }, 500); // 500ms delay to consider the mouse stopped
+    const { clientX, clientY } = event;
+    const { offsetLeft, offsetTop, offsetWidth, offsetHeight } = container;
+    const x = clientX - offsetLeft - offsetWidth / 2;
+    const y = clientY - offsetTop - offsetHeight / 2;
+    const tiltX = (y / offsetHeight) * 70; // Adjust the tilt factor as needed
+    const tiltY = (x / offsetWidth) * -70; // Adjust the tilt factor as needed
+    // Add scale factor to the transform
 
-    element.addEventListener("mouseenter", handleMouseEnter);
-    element.addEventListener("mouseleave", handleMouseLeave);
-
-    return () => {
-      element.removeEventListener("mouseenter", handleMouseEnter);
-      element.removeEventListener("mouseleave", handleMouseLeave);
-    };
-  }, []);
-
+    const newTransform = `translate(-50%, -50%) perspective(700px) rotateX(${tiltX}deg) rotateY(${tiltY}deg)  `; // Add scale for depth effect
+    const newTransform1 = `scale(1) `; // Add scale for depth effect
+    setTransformStyle1(newTransform1);
+    setTransformStyle(newTransform);
+  };
+  function handleMouseLeave() {
+    setIsMouseOver(false);
+    const newTransform1 = `translate(-50%, -50%) perspective(700px) `; // Add scale for depth effect
+    setTransformStyle1("scale(0.001) ");
+    setTransformStyle(newTransform1);
+  }
+  function handleMouseEnter() {
+    setIsMouseOver(true); // Mark mouse as over the video
+  }
+  function handleMouseLeaveCenter() {
+    setIsMouseOver(false); // Mark mouse as over the video
+  }
+  useEffect(() => {
+    console.log("isMouseStopped:", isMouseStopped); // This will log the updated value
+    if (isMouseStopped && !isMouseOver) {
+      const newTransform = `translate(-50%, -50%) perspective(700px) `; // Add scale for depth effect
+      setTransformStyle(newTransform);
+      setTransformStyle1(" scale(0.001)");
+    }
+    console.log("isMouseOver:", isMouseOver); // This will log the updated value
+  }, [isMouseStopped, isMouseOver]);
   return (
-    <div className="relative h-dvh w-screen overflow-x-hidden">
+    <div
+      className="relative h-dvh w-screen overflow-x-hidden"
+      ref={containerRef}
+      onMouseMove={handleMouseMove}
+      onMouseLeave={handleMouseLeave}
+    >
       {isLoading && (
         <div className="flex-center absolute z-[-100] h-dvh w-screen overflow-hidden bg-black ">
           <div className="three-body">
@@ -150,13 +176,23 @@ export default function Hero() {
         <div className="absolute left-0 top-0 z-30 h-full w-full bg-black opacity-30 pointer-events-none"></div>
         <div>
           <div
-            className=" absolute-center absolute z-50 size-64 cursor-pointer overflow-hidden"
+            className={`absolute-center absolute z-50 size-64 cursor-pointer overflow-hidden rounded-xl scale-100  `}
             ref={hoverElementRef}
+            onMouseMove={handleMouseEnter}
+            onMouseLeave={handleMouseLeaveCenter}
+            style={{
+              transform: transformStyle,
+              transition: "transform 0.1s linear",
+            }}
           >
             <div
               onClick={handleMiniVideoClick}
               ref={videoContainerRef}
-              className="origin-center scale-50 opacity-0 transition-all duration-500 ease-in hover:opacity-100 hover:scale-100  "
+              className="origin-center!  transition-all duration-500 ease-in scale-[0.001]   "
+              style={{
+                transform: transformStyle1,
+                transition: "transform 1s linear",
+              }}
             >
               <video
                 ref={nextVideoRef}
@@ -164,7 +200,7 @@ export default function Hero() {
                 loop
                 muted
                 id="current-video"
-                className="size-64 origin-center scale-150 object-cover object-center "
+                className="size-64 origin-center object-cover object-center border rounded-xl border-slate-700 "
                 onLoadedData={handleVideoLoad}
               />
             </div>

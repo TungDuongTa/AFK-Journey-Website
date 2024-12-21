@@ -56,11 +56,31 @@ export default function Map() {
         ease: "power2.out",
         scrollTrigger: {
           trigger: ".maps-hd", // Trigger the animation when `.maps-hd` enters the viewport
-          start: "top 80%", // When top of `.maps-hd` is 80% from the top of the viewport
+          start: "top 70%", // When top of `.maps-hd` is 80% from the top of the viewport
           toggleActions: "play reverse play reverse",
         },
       }
     );
+    // Change body background color
+    gsap.to("body", {
+      backgroundColor: "#e3e3e3", // Background color when scrolling down
+
+      ease: "power2.out",
+      scrollTrigger: {
+        trigger: ".maps-hd",
+        start: "top bottom", // When the top of `.maps-hd` hits the bottom of the viewport
+        toggleActions: "play reverse play reverse",
+        onEnter: () => {},
+        onLeaveBack: () => {
+          // Change the background color to black when scrolling back up
+          gsap.to("body", {
+            backgroundColor: "black",
+
+            ease: "power2.out",
+          });
+        },
+      },
+    });
     if (bannerRef.current) {
       gsap.fromTo(
         bannerRef.current,
@@ -72,7 +92,7 @@ export default function Map() {
           ease: "power2.out",
           scrollTrigger: {
             trigger: bannerRef.current,
-            start: "top 80%", // Trigger animation when `.maps-banner` is 90% in view
+            start: "top 70%", // Trigger animation when `.maps-banner` is 90% in view
             toggleActions: "play reverse play reverse",
           },
         }
@@ -89,7 +109,7 @@ export default function Map() {
           ease: "power2.out",
           scrollTrigger: {
             trigger: bannerRef.current,
-            start: "top 80%", // Trigger animation when `.maps-banner` is 80% in view
+            start: "top 70%", // Trigger animation when `.maps-banner` is 80% in view
             toggleActions: "play reverse play reverse",
           },
         }

@@ -16,7 +16,7 @@ export default function GameFeatures() {
   ];
 
   return (
-    <div className="index-game relative min-h-screen ">
+    <div className="index-game relative py-32 ">
       {/* bg div */}
       <div className="game-bg current">
         <img
@@ -53,11 +53,10 @@ export default function GameFeatures() {
                 clickable: true, // Make the pagination dots clickable
               }}
               loop={true}
-
-              //   autoplay={{
-              //     delay: 3000, // Set autoplay delay
-              //     disableOnInteraction: false, // Don't disable autoplay on interaction
-              //   }}
+              autoplay={{
+                delay: 3000, // Set autoplay delay
+                disableOnInteraction: false, // Don't disable autoplay on interaction
+              }}
             >
               {images.map((image) => (
                 <SwiperSlide key={image.id}>
