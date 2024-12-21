@@ -94,7 +94,7 @@ export default function Features() {
               <div className="flex size-full overflow-hidden relative">
                 <img
                   src="videos/feature1-6.jpg"
-                  className="object-cover object-center"
+                  className="object-cover object-center size-full"
                 />
                 <h1 className="absolute top-5 left-5 z-10 bento-title special-font text-blue-50">
                   More <br /> Coming <br /> Soon
