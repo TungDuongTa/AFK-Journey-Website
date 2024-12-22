@@ -1,6 +1,6 @@
 # AFK Journey Website
 
-Welcome! This project showcases a collection of features and functionalities for users to explore using React+Vite+GSAP. Check out the live demo below.
+Animation showcase page using react+vite+gsap.
 
 ## Live Demo
 
@@ -10,9 +10,9 @@ You can view the live demo of the website here:
 
 ## Features
 
-- **Responsive Design**: The website is fully responsive, providing a seamless experience across devices.
+- **Responsive Design**: The website is not fully responsive. Only support up to medium screen like ipad
 - **Interactive UI**: Engaging and dynamic user interface elements.
-- **Fast Performance**: Optimized for speed and efficiency.
+- **Fast Performance**: Optimized for speed and efficiency. I hope so
 
 ## Installation
 
