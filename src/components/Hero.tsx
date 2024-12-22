@@ -11,6 +11,7 @@ export default function Hero() {
   const [hasClicked, sethasClicked] = useState(false);
   const [isClickable, setIsClickable] = useState(true);
   const [isLoading, setisLoading] = useState(true);
+  const [isIntroVideoPlaying, setisIntroVideoPlaying] = useState(false);
   const [loadedVideos, setloadedVideos] = useState(0);
   const [delayedIndex, setDelayedIndex] = useState(currentIndex);
   const totalVideos = 4;
@@ -41,8 +42,12 @@ export default function Hero() {
   useEffect(() => {
     if (loadedVideos === totalVideos - 1) {
       setisLoading(false);
+      setisIntroVideoPlaying(true); // Play the intro video
     }
   }, [loadedVideos]);
+  function handleIntroVideoEnd() {
+    setisIntroVideoPlaying(false); // Stop showing the intro video after it ends
+  }
   useGSAP(
     () => {
       if (hasClicked) {
@@ -160,11 +165,25 @@ export default function Hero() {
       onMouseLeave={handleMouseLeave}
     >
       {isLoading && (
-        <div className="flex-center absolute z-[-100] h-dvh w-screen overflow-hidden bg-black ">
-          <div className="three-body">
+        <div className="flex-center absolute z-[100] h-dvh w-screen overflow-hidden bg-violet-50 ">
+          <div className="">
             <div className="three-body__dot"></div>
             <div className="three-body__dot"></div>
             <div className="three-body__dot"></div>
+          </div>
+        </div>
+      )}
+      {isIntroVideoPlaying && (
+        <div className="flex-center absolute z-[90] h-dvh w-screen overflow-hidden bg-black">
+          <div>
+            <video
+              src="videos/loadingVideo.mp4"
+              loop={false}
+              muted
+              autoPlay
+              onEnded={handleIntroVideoEnd} // Call when video finishes
+              className=""
+            />
           </div>
         </div>
       )}
