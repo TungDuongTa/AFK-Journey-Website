@@ -16,6 +16,22 @@ export default function Hero() {
   const [delayedIndex, setDelayedIndex] = useState(currentIndex);
   const totalVideos = 4;
   const nextVideoRef = useRef<HTMLVideoElement | null>(null);
+  const introRef = useRef<HTMLDivElement | null>(null);
+  //disable scroll when video is playing/not loaded
+  useEffect(() => {
+    const disableScroll = isIntroVideoPlaying || isLoading;
+
+    if (disableScroll) {
+      document.body.style.overflow = "hidden"; // Disable scrolling
+    } else {
+      document.body.style.overflow = ""; // Re-enable scrolling
+    }
+
+    // Cleanup to reset the overflow style when the component unmounts
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [isIntroVideoPlaying, isLoading]);
   function handleMiniVideoClick() {
     if (!isClickable) return; // Prevent click if not clickable
 
@@ -46,8 +62,27 @@ export default function Hero() {
     }
   }, [loadedVideos]);
   function handleIntroVideoEnd() {
-    setisIntroVideoPlaying(false); // Stop showing the intro video after it ends
+    if (introRef.current) {
+      gsap.to(introRef.current, {
+        clipPath:
+          "polygon(100% 100%, 0% 100%, 25% 100%, 25% 25%, 75% 25%, 25% 25%, 25% 75%, 25% 100%, 100% 100%, 100% 0%)",
+        duration: 1,
+        ease: "power1.inOut",
+        onComplete: () => {
+          setisIntroVideoPlaying(false); // Hide the intro after animation
+        },
+      });
+    }
   }
+
+  useEffect(() => {
+    if (isIntroVideoPlaying && introRef.current) {
+      gsap.set(introRef.current, {
+        clipPath:
+          "polygon(0 0, 0% 100%, 25% 100%, 25% 25%, 75% 25%, 25% 25%, 25% 75%, 25% 100%, 100% 100%, 100% 0%)", // Fullscreen
+      });
+    }
+  }, [isIntroVideoPlaying]);
   useGSAP(
     () => {
       if (hasClicked) {
@@ -174,7 +209,10 @@ export default function Hero() {
         </div>
       )}
       {isIntroVideoPlaying && (
-        <div className="flex-center absolute z-[90] h-dvh w-screen overflow-hidden bg-black">
+        <div
+          className="flex-center absolute z-[90] h-dvh w-screen overflow-hidden bg-black"
+          ref={introRef}
+        >
           <div>
             <video
               src="videos/loadingVideo.mp4"

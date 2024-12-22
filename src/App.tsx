@@ -4,8 +4,25 @@ import Navbar from "./components/Navbar";
 import Map from "./components/Map";
 import Features from "./components/Features";
 import GameFeatures from "./components/GameFeatures";
+import { useEffect } from "react";
 
 export default function App() {
+  useEffect(() => {
+    // This will make sure to scroll to top after page reload
+    window.scrollTo(0, 0);
+
+    // Handle potential scroll position issues when loading
+    window.addEventListener("beforeunload", () => {
+      window.scrollTo(0, 0);
+    });
+
+    return () => {
+      // Cleanup listener on unmount
+      window.removeEventListener("beforeunload", () => {
+        window.scrollTo(0, 0);
+      });
+    };
+  }, []); // Empty dependency to run on initial mount
   return (
     <main className="relative min-h-screen w-screen overflow-x-hidden  ">
       <Navbar />
