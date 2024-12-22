@@ -91,12 +91,13 @@ export default function Features() {
           </div>
           <div className="relative col-span-1 row-span-1 overflow-hidden rounded-md bentoAnimation">
             <BentoTilt className=" border-hsla size-full rounded-md transition-transform duration-300 ease-out  ">
-              <div className="flex size-full overflow-hidden relative">
+              <div className="flex size-full overflow-hidden relative px-6 py-8 md:px-6 md:py-6">
                 <img
                   src="videos/feature1-6.jpg"
-                  className="object-cover object-center size-full"
+                  className="absolute left-0 top-0 object-cover object-center size-full"
                 />
-                <h1 className="absolute top-5 left-5 z-10 bento-title special-font text-blue-50">
+
+                <h1 className=" z-10 bento-title special-font text-blue-50">
                   More <br /> Coming <br /> Soon
                 </h1>
               </div>
