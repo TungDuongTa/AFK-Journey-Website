@@ -134,25 +134,13 @@ export default function Map() {
   return (
     <div className="relative  pt-80 md:pt-60 lg:pt-96">
       {/* Big background absolute div with mask */}
-      <div
-        className="w-full h-full relative  bg-cover bg-center "
-        style={{
-          backgroundImage: "url(/img/arc-bg.jpg)",
-          maskImage: "url(/img/arc-mask.png)", // Apply the mask here
-          WebkitMaskImage: "url(/img/arc-mask.png)", // For Safari compatibility
-          maskSize: "cover", // Ensure the mask covers the background
-          WebkitMaskSize: "cover", // For Safari compatibility
-          maskRepeat: "no-repeat", // Prevent repeating the mask
-          WebkitMaskRepeat: "no-repeat", // For Safari compatibility
-          maskPosition: "center", // Ensure the mask is centered over the image
-          WebkitMaskPosition: "center", // For Safari compatibility
-
-          aspectRatio: "1920 / 791",
-          width: "100%", // Make it responsive to the parent
-          height: "auto", // Allow the height to adjust
-          maxHeight: "100vh", // Ensure it doesn’t overflow the viewport height
-        }}
-      />
+      <div className="maps-bg">
+        <img
+          src="/img/arc-bg.jpg"
+          alt="arc"
+          className="object-cover max-w-full align-middle"
+        />
+      </div>
       <div className="Bigicon" ref={bigIconRef}>
         <img src="/img/npc.png" id="bigIconImg" />
       </div>
