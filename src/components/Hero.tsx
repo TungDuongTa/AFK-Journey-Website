@@ -259,6 +259,7 @@ export default function Hero() {
                 id="current-video"
                 className="size-64 origin-center object-cover object-center border rounded-xl border-slate-700 "
                 onLoadedData={handleVideoLoad}
+                preload="auto"
               />
             </div>
           </div>
