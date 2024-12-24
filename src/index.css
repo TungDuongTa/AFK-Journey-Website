@@ -57,7 +57,7 @@
 body {
   width: 100dvw;
   overflow-x: hidden;
-  background-color: #e3e3e3;
+  background-color: #fffef2;
   font-family: "General Sans", sans-serif;
 }
 
@@ -624,4 +624,266 @@ body {
   opacity: 1 !important;
   border-radius: 0 !important;
   margin: 0 5px !important;
+}
+/* --
+-- 
+--  */
+/* News CSS */
+/* --
+-- 
+--  */
+.index-news {
+  padding: var(--size-140) 0 calc(var(--size-140) * 2);
+}
+.news-icon1 {
+  position: absolute;
+  left: 0;
+  top: 0;
+  right: 0;
+}
+.lh-title.news {
+  margin: auto;
+  width: auto;
+  height: 96px;
+  height: clamp(43px, 5vw, 96px);
+  text-align: center;
+}
+.imga {
+  border: 0;
+  display: inline-block;
+  width: auto;
+  max-width: 100%;
+  vertical-align: middle;
+  object-fit: cover;
+}
+.news-cont {
+  background-color: #f6f1ea;
+  border-radius: var(--size-100) var(--size-10) var(--size-100) 0;
+  margin-top: var(--size-10);
+}
+.news-cont::before {
+  content: "";
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: var(--size-100) var(--size-10) var(--size-100) 0;
+  background-color: rgba(0, 0, 0, 0.05);
+  position: absolute;
+  left: calc(var(--size-10) / 2);
+  top: var(--size-10);
+  z-index: -1;
+}
+.news-cont > .left {
+  width: calc(var(--size-100) * 8);
+}
+.news-banner {
+  aspect-ratio: 817 / 445;
+  mask: url(../img/icon8.png);
+  -webkit-mask: url(../img/icon8.png);
+  mask-size: cover;
+  -webkit-mask-size: cover;
+}
+.news-banner .img {
+  mask: url(../img/site-img-mask.png);
+  -webkit-mask: url(../img/site-img-mask.png);
+  mask-size: 3000% 100%;
+  -webkit-mask-size: 3000% 100%;
+  animation: maskMove 0.8s steps(29) forwards;
+}
+.news-cont > .right {
+  width: calc(
+    100% - var(--size-100) * 8 + clamp(17px, 1.7708333333333333vw, 34px)
+  );
+  position: absolute;
+  padding: var(--size-25) 0;
+  z-index: 2;
+  right: 0;
+  top: 0;
+  bottom: 0;
+}
+.news-cont > .right .icon {
+  width: var(--size-140);
+  position: absolute;
+  right: var(--size-30);
+  top: var(--size-70-);
+  z-index: 4;
+}
+.news-cont > .right > .title {
+  height: clamp(22px, 2.2916666666666665vw, 44px);
+  background-color: #fdfaf4;
+  position: relative;
+  width: calc(100% - var(--size-130));
+  left: 1px;
+  display: flex;
+  align-items: center;
+  padding-left: var(--size-45);
+}
+.l-font20 {
+  font-size: 20px;
+  font-size: clamp(16px, 1.0416666666666665vw, 20px);
+}
+.news-cont > .right > .title {
+  height: clamp(22px, 2.2916666666666665vw, 44px);
+  background-color: #fdfaf4;
+  position: relative;
+  width: calc(100% - var(--size-130));
+  left: 1px;
+  display: flex;
+  align-items: center;
+  padding-left: var(--size-45);
+}
+.news-cont > .right > .title > * {
+  padding: 0 var(--size-25);
+  background-color: #649a5a;
+  color: #fbf4e7;
+  border-radius: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 27px;
+  position: relative;
+  overflow: hidden;
+}
+.news-cont > .right > .title > ::before {
+  content: "";
+  width: 57px;
+  aspect-ratio: 57 / 28;
+  width: clamp(28px, 2.96875vw, 57px);
+  position: absolute;
+  left: 0;
+  top: 0;
+  background: url(../img/icon4.png) no-repeat center;
+  background-size: cover;
+}
+.news-cont > .right > .title::after {
+  content: "";
+  display: block;
+  width: clamp(43px, 4.53125vw, 87px);
+  aspect-ratio: 87 / 44;
+  background: url(../img/icon5.png) no-repeat center;
+  background-size: cover;
+  position: absolute;
+  left: 100%;
+  top: 0;
+}
+.news-cont > .right > .title > * i {
+  position: relative;
+  top: -2px;
+  z-index: 2;
+}
+.news-item {
+  overflow: hidden;
+  padding: var(--size-30) var(--size-40) var(--size-20) var(--size-20);
+}
+.l-font16 {
+  font-size: 16px;
+  font-size: clamp(14px, 0.8333333333333334vw, 16px);
+}
+.news-item > * {
+  position: relative;
+  --color: #716561;
+}
+.news-item > *:hover {
+  --color: #649a5a; /* Change to a different color when hovered */
+}
+.news-item > * > * {
+  padding: var(--size-15) 0;
+  display: flex;
+  align-items: center;
+  position: relative;
+  color: var(--color);
+}
+a {
+  text-decoration: none;
+  color: inherit;
+  outline: 0;
+  transition: var(--transition);
+}
+.news-item > * > ::before {
+  content: "";
+  display: block;
+  width: 88%;
+  height: 2px;
+  background-color: var(--color);
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: 0;
+  opacity: 0.3;
+  transition: var(--transition);
+}
+.news-item > * .left {
+  width: 75%;
+  display: flex;
+  align-items: center;
+  padding-left: calc(var(--size-10) / 2);
+}
+.news-item > * .left::before,
+.news-item > * .right::before {
+  content: "";
+  display: block;
+  width: var(--size-10);
+  height: calc(var(--size-10) - 3px);
+  background-color: var(--color);
+  transition: var(--transition);
+  position: absolute;
+  left: 0;
+  bottom: calc((var(--size-10-) + 3px) / 2 + 1px);
+  opacity: 0.3;
+  clip-path: polygon(50% 0, 100% 50%, 50% 100%, 0 50%);
+  transition: var(--transition);
+}
+.news-item > * .left::after,
+.news-item > * .right::after {
+  content: "";
+  display: block;
+  width: calc(var(--size-15) + 2px);
+  height: 2px;
+  background-color: var(--color);
+  position: absolute;
+  left: var(--size-20);
+  bottom: 0;
+  opacity: 0.3;
+  transition: var(--transition);
+}
+.news-item > * .left i {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--size-15);
+  height: var(--size-15);
+  border: 2px solid var(--color);
+  transform: rotate(45deg) scale(0.9);
+  margin-right: var(--size-20);
+  position: relative;
+  top: 1px;
+  transition: var(--transition);
+  aspect-ratio: 1;
+}
+.news-item > * .left i::before {
+  width: 100%;
+  height: 100%;
+  background-color: var(--color);
+  content: "";
+  display: block;
+  transform: scale(0.8);
+  transition: var(--transition);
+}
+.lines {
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  word-break: break-all;
+}
+.news-item > * .right {
+  margin-left: auto;
+}
+.news-item > * .right::before {
+  left: auto;
+  right: 0;
+}
+.news-item > * .right::after {
+  left: auto;
+  right: var(--size-20);
 }

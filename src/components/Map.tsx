@@ -44,26 +44,9 @@ export default function Map() {
     }, 0); // Ensure re-trigger
   };
   useGSAP(() => {
-    const items = document.querySelectorAll(".maps-hd li");
-    gsap.fromTo(
-      items,
-      { opacity: 0, y: -40 }, // Starting state: hidden and slightly above
-      {
-        opacity: 1,
-        y: 0, // Ending state: fully visible and at original position
-        duration: 1,
-        stagger: 0.2, // Animate one after the other
-        ease: "power2.out",
-        scrollTrigger: {
-          trigger: ".maps-hd", // Trigger the animation when `.maps-hd` enters the viewport
-          start: "top 70%", // When top of `.maps-hd` is 80% from the top of the viewport
-          toggleActions: "play reverse play reverse",
-        },
-      }
-    );
     // Change body background color
     gsap.to("body", {
-      backgroundColor: "#e3e3e3", // Background color when scrolling down
+      backgroundColor: "#fffef2", // Background color when scrolling down
 
       ease: "power1.out",
       scrollTrigger: {
@@ -81,6 +64,25 @@ export default function Map() {
         },
       },
     });
+    // Animate the list items in `.maps-hd` when they enter
+    const items = document.querySelectorAll(".maps-hd li");
+    gsap.fromTo(
+      items,
+      { opacity: 0, y: -40 }, // Starting state: hidden and slightly above
+      {
+        opacity: 1,
+        y: 0, // Ending state: fully visible and at original position
+        duration: 1,
+        stagger: 0.2, // Animate one after the other
+        ease: "power2.out",
+        scrollTrigger: {
+          trigger: ".maps-hd", // Trigger the animation when `.maps-hd` enters the viewport
+          start: "top 70%", // When top of `.maps-hd` is 80% from the top of the viewport
+          toggleActions: "play reverse play reverse",
+        },
+      }
+    );
+
     if (bannerRef.current) {
       gsap.fromTo(
         bannerRef.current,
@@ -91,7 +93,7 @@ export default function Map() {
           duration: 1, // Animation duration
           ease: "power2.out",
           scrollTrigger: {
-            trigger: bannerRef.current,
+            trigger: ".maps-hd",
             start: "top 70%", // Trigger animation when `.maps-banner` is 90% in view
             toggleActions: "play reverse play reverse",
           },
@@ -108,7 +110,7 @@ export default function Map() {
           duration: 1, // Animation duration
           ease: "power2.out",
           scrollTrigger: {
-            trigger: bannerRef.current,
+            trigger: ".maps-hd",
             start: "top 70%", // Trigger animation when `.maps-banner` is 80% in view
             toggleActions: "play reverse play reverse",
           },
@@ -122,7 +124,7 @@ export default function Map() {
           y: 0, // Slide into place
           ease: "power1.inOut",
           scrollTrigger: {
-            trigger: bannerRef.current,
+            trigger: ".maps-hd",
             start: "top bottom", // Start when top of bannerRef hits the bottom of the viewport
             end: "bottom top", // End when the bottom of bannerRef hits the top of the viewport
             scrub: true, // Smoothly scrub the animation in sync with scrolling

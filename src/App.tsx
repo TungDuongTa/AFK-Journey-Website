@@ -5,6 +5,7 @@ import Map from "./components/Map";
 import Features from "./components/Features";
 import GameFeatures from "./components/GameFeatures";
 import { useEffect } from "react";
+import News from "./components/News";
 
 export default function App() {
   useEffect(() => {
@@ -34,6 +35,7 @@ export default function App() {
 
       <Map />
       <GameFeatures />
+      <News />
     </main>
   );
 }
