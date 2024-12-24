@@ -43,7 +43,7 @@ export default function Hero() {
     // Delay the update for the main video
     setTimeout(() => {
       setDelayedIndex(upcomingVideoIndex);
-    }, 100); // Delay of 0.3 seconds
+    }, 1300); // Delay of 0.3 seconds
   }
   function handleVideoLoad() {
     setloadedVideos((prev) => prev + 1);
