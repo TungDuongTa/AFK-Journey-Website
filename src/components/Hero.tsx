@@ -86,7 +86,10 @@ export default function Hero() {
   useGSAP(
     () => {
       if (hasClicked) {
-        gsap.set("#next-video", { visibility: "visible" });
+        gsap.set("#next-video", {
+          visibility: "visible",
+          immediateRender: true,
+        });
         gsap.to("#next-video", {
           transformOrigin: "center center",
           scale: 1,
@@ -271,6 +274,7 @@ export default function Hero() {
             id="next-video"
             className="absolute-center invisible absolute z-20 size-64 object-cover object-center"
             onLoadedData={handleVideoLoad}
+            preload="auto"
           />
           <video
             src={getVideoSrc(
@@ -281,6 +285,7 @@ export default function Hero() {
             muted
             className="absolute left-0 top-0 size-full object-cover object-center"
             onLoadedData={handleVideoLoad}
+            preload="auto"
           />
         </div>
         <div className="absolute bottom-10 right-10 z-40 ">
