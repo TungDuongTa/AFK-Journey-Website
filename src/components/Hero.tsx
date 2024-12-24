@@ -252,7 +252,7 @@ export default function Hero() {
               className="origin-center!  transition-all duration-500 ease-in scale-[0.001]   "
               style={{
                 transform: transformStyle1,
-                transition: "transform 0.1s linear",
+                transition: "transform 1s linear",
               }}
             >
               <video
