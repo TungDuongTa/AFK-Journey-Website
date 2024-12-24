@@ -887,3 +887,51 @@ a {
   left: auto;
   right: var(--size-20);
 }
+/* --
+-- 
+--  */
+/* News CSS For mobile */
+/* --
+-- 
+--  */
+@media screen and (max-width: 830px) {
+  /* Adjust the max-width as per your "phone" screen definition */
+  .index-news {
+    padding: 9.333333333333334vw 0 6vw;
+  }
+  .lh-title.news {
+    margin: auto;
+    width: auto;
+    height: 13.467vw;
+    text-align: center;
+  }
+  .lh-title img {
+    width: auto;
+    height: 100%;
+    display: inline-block;
+  }
+  .news-cont {
+    border-radius: 0 var(--size-10) var(--size-100) 0;
+    margin-top: 5px;
+    padding: 0 5.333333333333334vw;
+  }
+  .news-banner {
+    aspect-ratio: 670 / 443;
+    mask: url(../img/icon5-1.png);
+    mask-size: cover;
+    mask: url(../img/icon5-1.png);
+    -webkit-mask: url(../img/icon5-1.png);
+    mask-size: cover;
+    -webkit-mask-size: cover;
+    position: relative;
+    z-index: 2;
+    width: 100%;
+  }
+  .news-banner .img {
+    height: 100%;
+  }
+  .news-banner img {
+    width: 100%;
+    height: 100%;
+  }
+}
