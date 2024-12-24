@@ -56,7 +56,7 @@ export default function Hero() {
   //... 4%4= 0 +1 = 1
   const upcomingVideoIndex = (currentIndex % totalVideos) + 1;
   useEffect(() => {
-    if (loadedVideos >= totalVideos - 1) {
+    if (loadedVideos === totalVideos - 1) {
       setisLoading(false);
       setisIntroVideoPlaying(true); // Play the intro video
     }
@@ -237,30 +237,10 @@ export default function Hero() {
         <div className="absolute left-0 top-0 z-30 h-full w-full bg-black opacity-30 pointer-events-none"></div>
         {/* Preload all videos */}
         <div className="invisible">
-          <video
-            src={getVideoSrc(1)}
-            muted
-            preload="auto"
-            onLoadedData={handleVideoLoad}
-          />
-          <video
-            src={getVideoSrc(2)}
-            muted
-            preload="auto"
-            onLoadedData={handleVideoLoad}
-          />
-          <video
-            src={getVideoSrc(3)}
-            muted
-            preload="auto"
-            onLoadedData={handleVideoLoad}
-          />
-          <video
-            src={getVideoSrc(4)}
-            muted
-            preload="auto"
-            onLoadedData={handleVideoLoad}
-          />
+          <video src={getVideoSrc(1)} muted preload="auto" />
+          <video src={getVideoSrc(2)} muted preload="auto" />
+          <video src={getVideoSrc(3)} muted preload="auto" />
+          <video src={getVideoSrc(4)} muted preload="auto" />
         </div>
         <div>
           {/* mivi video */}
