@@ -235,7 +235,39 @@ export default function Hero() {
       >
         {/* Black layer with low opacity */}
         <div className="absolute left-0 top-0 z-30 h-full w-full bg-black opacity-30 pointer-events-none"></div>
+        {/* Preload all videos */}
+        <div className="invisible">
+          <video
+            src={getVideoSrc(1)}
+            loop
+            muted
+            preload="auto"
+            onLoadedData={handleVideoLoad}
+          />
+          <video
+            src={getVideoSrc(2)}
+            loop
+            muted
+            preload="auto"
+            onLoadedData={handleVideoLoad}
+          />
+          <video
+            src={getVideoSrc(3)}
+            loop
+            muted
+            preload="auto"
+            onLoadedData={handleVideoLoad}
+          />
+          <video
+            src={getVideoSrc(4)}
+            loop
+            muted
+            preload="auto"
+            onLoadedData={handleVideoLoad}
+          />
+        </div>
         <div>
+          {/* mivi video */}
           <div
             className={`absolute-center absolute z-50 size-64 cursor-pointer overflow-hidden rounded-xl scale-100  `}
             ref={hoverElementRef}
