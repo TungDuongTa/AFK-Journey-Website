@@ -43,7 +43,7 @@ export default function Hero() {
     // Delay the update for the main video
     setTimeout(() => {
       setDelayedIndex(upcomingVideoIndex);
-    }, 1300); // Delay of 0.3 seconds
+    }, 100); // Delay of 0.3 seconds
   }
   function handleVideoLoad() {
     setloadedVideos((prev) => prev + 1);
@@ -316,7 +316,7 @@ export default function Hero() {
       <div className="absolute bottom-10 right-10 invert ">
         <img
           src="img/afk-logo.png"
-          className=" w-48 sm:w-72 lg:w-96 object-contain"
+          className=" w-48 sm:w-72 lg:w-96 object-contain cursor-pointer"
         />
       </div>
     </div>
