@@ -35,7 +35,7 @@ export default function GameFeatures() {
     });
   }, []);
   return (
-    <div className="index-game relative py-32 ">
+    <div className="index-game relative ">
       {/* bg div */}
       <div className="game-bg current">
         <img

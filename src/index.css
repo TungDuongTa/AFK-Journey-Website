@@ -469,9 +469,9 @@ body {
 /* --
 -- 
 --  */
-/* .index-game {
+.index-game {
   padding: var(--size-110) 0 var(--size-80);
-} */
+}
 .game-bg {
   position: absolute;
   left: 0;
@@ -933,5 +933,176 @@ a {
   .news-banner img {
     width: 100%;
     height: 100%;
+  }
+  .news-bottom {
+    background-color: #f6f1ea;
+    border-radius: 0 0 20px 6px;
+    margin-top: -11vw;
+    position: relative;
+    padding: 8vw 2.666666666666667vw 5vw;
+    width: 100%;
+  }
+  .news-bottom .icon {
+    width: 22.133333333333333vw;
+    position: absolute;
+    right: 2px;
+    top: -6vw;
+    z-index: 4;
+  }
+  .news-bottom > .title {
+    height: 8vw;
+    background-color: #fdfaf4;
+    position: relative;
+    width: 80%;
+    left: 1px;
+    display: flex;
+    align-items: center;
+    padding-left: 2.666666666666667vw;
+    border-radius: 10px 0 0 0;
+  }
+  .news-bottom > .title > * {
+    padding: 0 3.3333333333333335vw;
+    background-color: #649a5a;
+    color: #fbf4e7;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 4.666666666666667vw;
+    position: relative;
+    overflow: hidden;
+    font-size: 3.4666666666666663vw;
+  }
+  .news-bottom > .title::after {
+    content: "";
+    display: block;
+    aspect-ratio: 87 / 44;
+    background: url(../img/new-icon5.png) no-repeat center;
+    background-size: cover;
+    position: absolute;
+    left: 100%;
+    top: 0;
+    height: 100%;
+  }
+  .news-bottom > .title > ::before {
+    content: "";
+    width: 57px;
+    aspect-ratio: 57 / 28;
+    height: 100%;
+    position: absolute;
+    left: 0;
+    top: 0;
+    background: url(../img/new-icon4.png) no-repeat center;
+    background-size: cover;
+  }
+  .news-bottom > .title > * i {
+    position: relative;
+    top: -1px;
+    z-index: 2;
+  }
+  .news-item > * {
+    position: relative;
+    --color: #716561;
+    height: 11.333333333333332vw;
+    font-size: 3.2vw;
+  }
+  .news-item > * > * {
+    display: flex;
+    align-items: center;
+    position: relative;
+    color: var(--color);
+    height: 100%;
+    padding: 0 2.666666666666667vw;
+  }
+  .news-item > * > ::before {
+    content: "";
+    display: block;
+    width: 84%;
+    height: 1px;
+    background-color: var(--color);
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    bottom: 0;
+    opacity: 0.3;
+    transition: var(--transition);
+  }
+  .news-item > * .left {
+    width: 70%;
+    display: flex;
+    align-items: center;
+    padding-left: calc(var(--size-10) / 2);
+  }
+  .news-item > * .left::before,
+  .news-item > * .right::before {
+    content: "";
+    display: block;
+    width: 2.4vw;
+    height: calc(2.4vw - 3px);
+    background-color: var(--color);
+    transition: var(--transition);
+    position: absolute;
+    left: 0;
+    bottom: calc((-2.4vw + 3px) / 2 + 1px);
+    opacity: 0.3;
+    clip-path: polygon(50% 0, 100% 50%, 50% 100%, 0 50%);
+    transition: var(--transition);
+  }
+  .news-item > * .left i {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.666666666666667vw;
+    height: 2.666666666666667vw;
+    border: 1px solid var(--color);
+    transform: rotate(45deg) scale(0.9);
+    margin-right: 1.3333333333333335vw;
+    position: relative;
+    top: 1px;
+    transition: var(--transition);
+    aspect-ratio: 1;
+  }
+  .news-item > * .left i::before {
+    width: 100%;
+    height: 100%;
+    background-color: var(--color);
+    content: "";
+    display: block;
+    transform: scale(0.8);
+    transition: var(--transition);
+  }
+  .lines {
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    word-break: break-all;
+  }
+  .news-item > * .left::after,
+  .news-item > * .right::after {
+    content: "";
+    display: block;
+    width: calc(var(--size-15) + 2px);
+    height: 1px;
+    background-color: var(--color);
+    position: absolute;
+    left: calc(2.4vw + 4px);
+    bottom: 0;
+    opacity: 0.3;
+    transition: var(--transition);
+  }
+  .news-item > * .right {
+    margin-left: auto;
+  }
+  .news-item > * .right::before {
+    left: auto;
+    right: 0;
+  }
+  .news-item > * .right::after {
+    left: auto;
+    right: calc(2.4vw + 4px);
+  }
+  .news-cont::before {
+    content: none;
   }
 }

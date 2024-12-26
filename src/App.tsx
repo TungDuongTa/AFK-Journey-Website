@@ -4,8 +4,9 @@ import Navbar from "./components/Navbar";
 import Map from "./components/Map";
 import Features from "./components/Features";
 import GameFeatures from "./components/GameFeatures";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import News from "./components/News";
+import NewsMobile from "./components/NewsMobile";
 
 export default function App() {
   useEffect(() => {
@@ -24,18 +25,34 @@ export default function App() {
       });
     };
   }, []); // Empty dependency to run on initial mount
+
+  //screen size check to dynamic render
+  const useMediaQuery = (query: string): boolean => {
+    const [matches, setMatches] = useState(
+      () => window.matchMedia(query).matches
+    );
+
+    useEffect(() => {
+      const mediaQueryList = window.matchMedia(query);
+      const listener = (event: MediaQueryListEvent) =>
+        setMatches(event.matches);
+
+      mediaQueryList.addEventListener("change", listener);
+      return () => mediaQueryList.removeEventListener("change", listener);
+    }, [query]);
+
+    return matches;
+  };
+  const isMobile = useMediaQuery("(max-width: 830px)");
   return (
     <main className="relative min-h-screen w-screen overflow-x-hidden  ">
       <Navbar />
-
       <Hero />
       <About />
-
       <Features />
-
       <Map />
       <GameFeatures />
-      <News />
+      {isMobile ? <NewsMobile /> : <News />}
     </main>
   );
 }

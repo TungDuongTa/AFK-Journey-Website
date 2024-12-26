@@ -15,6 +15,8 @@ export default function News() {
     { title: "AFK Journey 1.2.4 Patch Notes", date: "12/18/2024" },
   ];
   const titleRef = useRef<HTMLDivElement>(null);
+  const newsRef = useRef<HTMLDivElement>(null);
+  const iconRef = useRef<HTMLDivElement>(null);
   useGSAP(() => {
     // Set up GSAP animation
     gsap.to(titleRef.current, {
@@ -29,9 +31,20 @@ export default function News() {
         toggleActions: "play none none reverse", // Allows replay on reverse
       },
     });
+    gsap.to(iconRef.current, {
+      x: "0%", // Horizontal translation
+      y: "0%", // Vertical translation
+      scrollTrigger: {
+        trigger: newsRef.current,
+        start: "top bottom", // Start animation when top of #News hits the bottom of the viewport
+        end: "top top", // End animation when top of #News hits the top of the viewport
+        scrub: true, // Smoothly interpolate the animation as you scroll
+        toggleActions: "play none none reverse", // Allows replay on reverse
+      },
+    });
   }, []);
   return (
-    <div id="News" className="index-news relative">
+    <div id="News" className="index-news relative" ref={newsRef}>
       <div className="news-icon1 current">
         <img src="/img/icon6.jpg" className="imga" />
       </div>
@@ -59,12 +72,13 @@ export default function News() {
           </div>
           <div className="right">
             <div
+              ref={iconRef}
               className="icon current"
               style={{
                 translate: "none",
                 rotate: "none",
                 scale: "none",
-                transform: "translate(14.4118%, 0%) translate3d(0px, 0px, 0px)",
+                transform: "translate(50%, 0%) translate3d(0px, 0px, 0px)",
               }}
             >
               <img src="/img/icon3.png" className="imga" />
