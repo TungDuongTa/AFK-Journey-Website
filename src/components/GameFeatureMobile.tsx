@@ -54,6 +54,9 @@ export default function GameFeaturesMobile() {
         <div className="game-hd-box">
           <ul className="game-hd bannerHd custom-pagination"></ul>
         </div>
+        <div className="icon current">
+          <img src="/img/icon41.png" className="imga !w-full" />
+        </div>
       </div>
     </div>
   );

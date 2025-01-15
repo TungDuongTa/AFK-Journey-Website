@@ -1252,4 +1252,11 @@ a {
   .game-hd > ::after {
     all: unset;
   }
+  .game-cont > .icon {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%);
+  }
 }
