@@ -7,6 +7,7 @@ import GameFeatures from "./components/GameFeatures";
 import { useEffect, useState } from "react";
 import News from "./components/News";
 import NewsMobile from "./components/NewsMobile";
+import GameFeaturesMobile from "./components/GameFeatureMobile";
 
 export default function App() {
   useEffect(() => {
@@ -51,7 +52,7 @@ export default function App() {
       <About />
       <Features />
       <Map />
-      <GameFeatures />
+      {isMobile ? <GameFeaturesMobile /> : <GameFeatures />}
       {isMobile ? <NewsMobile /> : <News />}
     </main>
   );
