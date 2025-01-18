@@ -8,8 +8,17 @@ import { useEffect, useState } from "react";
 import News from "./components/News";
 import NewsMobile from "./components/NewsMobile";
 import GameFeaturesMobile from "./components/GameFeatureMobile";
-
+import Lenis from "lenis";
 export default function App() {
+  useEffect(() => {
+    const lenis = new Lenis();
+    function raf(time: DOMHighResTimeStamp) {
+      lenis.raf(time);
+      requestAnimationFrame(raf);
+    }
+    requestAnimationFrame(raf);
+  }, []);
+
   useEffect(() => {
     // This will make sure to scroll to top after page reload
     window.scrollTo(0, 0);
