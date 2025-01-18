@@ -501,7 +501,7 @@ body {
 .lh-title.game {
   width: auto;
   height: 96px;
-  height: clamp(43px, 5vw, 96px);
+  /* height: clamp(43px, 5vw, 96px); */
   text-align: center;
   margin: auto;
 }
@@ -645,7 +645,7 @@ body {
   margin: auto;
   width: auto;
   height: 96px;
-  height: clamp(43px, 5vw, 96px);
+  /* height: clamp(43px, 5vw, 96px); */
   text-align: center;
 }
 .imga {
