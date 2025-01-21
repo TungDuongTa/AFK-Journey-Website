@@ -49,7 +49,7 @@ export default function UpdateSection() {
         scrollTrigger: {
           trigger: stickySectionRef.current,
           start: "top top",
-          end: `+=${sectionHeight} top`,
+          end: `+=${sectionHeight * 3} top`,
           scrub: 0.5,
           pin: true,
           pinSpacing: true,
@@ -86,8 +86,8 @@ export default function UpdateSection() {
           ".bgImg3",
           {
             clipPath: "polygon(0% 0%, 100% 0%, 100% 100%, 0% 100% )",
-            backgroundPosition: "top right", // Animate to top-right position
-            duration: 1.5,
+
+            duration: 2,
             ease: "none",
           },
           "-=1"
@@ -96,17 +96,21 @@ export default function UpdateSection() {
           ".bgImg3",
           {
             scale: 1.8,
-            backgroundPosition: "top right", // Animate to top-right position
+
+            duration: 1,
+            ease: "none",
+          },
+          "-=2"
+        )
+        .to(
+          ".bgImg3",
+          {
+            scale: 1,
             duration: 1,
             ease: "none",
           },
           "-=1"
-        )
-        .to(".bgImg3", {
-          scale: 1,
-          duration: 1,
-          ease: "none",
-        });
+        );
 
       // Add event callbacks if needed
       tl.eventCallback("onStart", () => {

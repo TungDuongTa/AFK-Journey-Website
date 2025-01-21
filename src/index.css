@@ -1380,6 +1380,6 @@ a {
 }
 .bgImg3 {
   clip-path: polygon(50% 25%, 50% 25%, 50% 75%, 50% 75%);
-  background-position: top left;
+
   transform: scale(2);
 }
