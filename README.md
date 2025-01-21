@@ -10,8 +10,8 @@ You can view the live demo of the website here:
 
 ## Features
 
-- **Responsive Design**: The website is not fully responsive. Only support up to medium screen like ipad
-- **Interactive UI**: Engaging and dynamic user interface elements.
+- **Responsive Design**: The website is fully responsive with some different design for mobile screen size
+- **Interactive UI**: Engaging and dynamic user interface elements with Gsap and Css.
 - **Fast Performance**: Optimized for speed and efficiency. I hope so
 
 ## Installation
