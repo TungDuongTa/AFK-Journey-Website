@@ -131,7 +131,7 @@ export default function UpdateSection() {
         <div
           className="bg1 page_bg flex-y flex-a-center !absolute top-0 left-0 w-full h-full z-10 bgImg1"
           style={{
-            backgroundImage: "url(/img/afkss1.jpeg) ",
+            backgroundImage: "url(/img/afksss1.jpg) ",
             backgroundPosition: "center center",
             backgroundSize: "100% 100%",
             backgroundRepeat: "no-repeat",

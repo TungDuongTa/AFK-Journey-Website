@@ -1376,7 +1376,7 @@ a {
   content: "";
 }
 .bgImg2 {
-  clip-path: polygon(40% 25%, 60% 25%, 60% 75%, 40% 75%);
+  clip-path: polygon(50% 25%, 50% 25%, 50% 75%, 50% 75%);
 }
 .bgImg3 {
   clip-path: polygon(50% 25%, 50% 25%, 50% 75%, 50% 75%);
