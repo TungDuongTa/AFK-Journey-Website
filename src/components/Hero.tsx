@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import Button from "./Button";
-import { TiLocationArrow } from "react-icons/ti";
+
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/all";
@@ -17,6 +16,7 @@ export default function Hero() {
   const totalVideos = 4;
   const nextVideoRef = useRef<HTMLVideoElement | null>(null);
   const introRef = useRef<HTMLDivElement | null>(null);
+
   //disable scroll when video is playing/not loaded
   useEffect(() => {
     const disableScroll = isIntroVideoPlaying || isLoading;
@@ -298,8 +298,19 @@ export default function Hero() {
         <div className="absolute bottom-10 right-10 z-40 ">
           <img
             src="img/afk-logo.png"
-            className=" w-48 sm:w-72 lg:w-96 object-contain"
+            className=" w-24 sm:w-72 lg:w-96 object-contain"
           />
+        </div>
+        <div className="dow-content z-50 bottom-10 md:bottom-16 left-10 absolute  ">
+          <a href="https://vda.afkjourney.com/pc_dl/com.farlightgames.igame.pc/a0f2a6caf27db1e96b33411c52f11817">
+            <img src="/img/dow_windows.png" className="imga dow-btn" />
+          </a>
+          <a href="https://play.google.com/store/apps/details?id=com.farlightgames.igame.gp">
+            <img src="/img/dow_googleplay.png" className="imga dow-btn" />
+          </a>
+          <a href="https://apps.apple.com/app/afk-journey/id1628970855">
+            <img src="/img/dow_appstore.png" className="imga dow-btn" />
+          </a>
         </div>
         <div className="absolute left-0 top-0 z-40 size-full">
           <div className="mt-24 px-6 sm:px-12">
@@ -309,20 +320,21 @@ export default function Hero() {
             <h1 className="special-font hero-heading text-blue-100">
               New Journey <br /> is waiting
             </h1>
+            {/* 
             <Button
               id="watch-trailer"
               title="Watch Trailer"
               leftIcon={<TiLocationArrow />}
               containerClass="bg-yellow-200 flex-center gap-1 text-[#4A403E] button-hover-effect hover:brightness-110 hover:text-black"
               href="https://www.youtube.com/watch?v=OiO6X_zL_w8"
-            />
+            /> */}
           </div>
         </div>
       </div>
       <div className="absolute bottom-10 right-10 invert ">
         <img
           src="img/afk-logo.png"
-          className=" w-48 sm:w-72 lg:w-96 object-contain cursor-pointer"
+          className=" w-24 sm:w-72 lg:w-96 object-contain cursor-pointer"
         />
       </div>
     </div>

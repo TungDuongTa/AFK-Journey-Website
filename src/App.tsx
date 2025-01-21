@@ -9,6 +9,7 @@ import News from "./components/News";
 import NewsMobile from "./components/NewsMobile";
 import GameFeaturesMobile from "./components/GameFeatureMobile";
 import Lenis from "lenis";
+import UpdateSection from "./components/UpdateSection";
 export default function App() {
   useEffect(() => {
     const lenis = new Lenis();
@@ -63,6 +64,7 @@ export default function App() {
       <Map />
       {isMobile ? <GameFeaturesMobile /> : <GameFeatures />}
       {isMobile ? <NewsMobile /> : <News />}
+      <UpdateSection />
     </main>
   );
 }
