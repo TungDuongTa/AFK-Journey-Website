@@ -37,7 +37,7 @@ export default function News() {
       scrollTrigger: {
         trigger: newsRef.current,
         start: "top bottom", // Start animation when top of #News hits the bottom of the viewport
-        end: "top top", // End animation when top of #News hits the top of the viewport
+        end: "bottom top", // End animation when top of #News hits the top of the viewport
         scrub: true, // Smoothly interpolate the animation as you scroll
         toggleActions: "play none none reverse", // Allows replay on reverse
       },

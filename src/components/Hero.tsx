@@ -17,21 +17,6 @@ export default function Hero() {
   const nextVideoRef = useRef<HTMLVideoElement | null>(null);
   const introRef = useRef<HTMLDivElement | null>(null);
 
-  //disable scroll when video is playing/not loaded
-  useEffect(() => {
-    const disableScroll = isIntroVideoPlaying || isLoading;
-
-    if (disableScroll) {
-      document.body.style.overflow = "hidden"; // Disable scrolling
-    } else {
-      document.body.style.overflow = ""; // Re-enable scrolling
-    }
-
-    // Cleanup to reset the overflow style when the component unmounts
-    return () => {
-      document.body.style.overflow = "";
-    };
-  }, [isIntroVideoPlaying, isLoading]);
   function handleMiniVideoClick() {
     if (!isClickable) return; // Prevent click if not clickable
 
@@ -298,7 +283,7 @@ export default function Hero() {
         <div className="absolute bottom-10 right-10 z-40 ">
           <img
             src="img/afk-logo.png"
-            className=" w-24 sm:w-72 lg:w-96 object-contain"
+            className=" w-24 sm:w-40 md:w-64 lg:w-96 object-contain"
           />
         </div>
         <div className="dow-content z-50 bottom-10 md:bottom-16 left-10 absolute  ">
@@ -334,7 +319,7 @@ export default function Hero() {
       <div className="absolute bottom-10 right-10 invert ">
         <img
           src="img/afk-logo.png"
-          className=" w-24 sm:w-72 lg:w-96 object-contain cursor-pointer"
+          className=" w-24 sm:w-40 md:w-64 lg:w-96 object-contain cursor-pointer"
         />
       </div>
     </div>
