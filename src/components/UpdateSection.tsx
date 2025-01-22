@@ -125,7 +125,7 @@ export default function UpdateSection() {
   return (
     <section>
       <div
-        className="relative w-full overflow-hidden aspect-[1920/1095]"
+        className="relative overflow-hidden w-screen h-screen"
         ref={stickySectionRef}
       >
         <div
