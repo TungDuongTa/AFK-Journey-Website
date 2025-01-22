@@ -222,8 +222,18 @@ export default function Hero() {
         <div className="absolute left-0 top-0 z-30 h-full w-full bg-black opacity-30 pointer-events-none"></div>
         {/* Preload other unrendered  videos */}
         <div className="invisible">
-          <video src={getVideoSrc(3)} muted preload="auto" />
-          <video src={getVideoSrc(4)} muted preload="auto" />
+          <video
+            src={getVideoSrc(3)}
+            muted
+            preload="auto"
+            onLoadedData={handleVideoLoad}
+          />
+          <video
+            src={getVideoSrc(4)}
+            muted
+            preload="auto"
+            onLoadedData={handleVideoLoad}
+          />
         </div>
         <div>
           {/* mivi video */}
