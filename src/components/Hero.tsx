@@ -47,27 +47,32 @@ export default function Hero() {
     }
   }, [loadedVideos]);
   function handleIntroVideoEnd() {
-    if (introRef.current) {
-      gsap.to(introRef.current, {
-        clipPath:
-          "polygon(100% 100%, 0% 100%, 25% 100%, 25% 25%, 75% 25%, 25% 25%, 25% 75%, 25% 100%, 100% 100%, 100% 0%)",
-        duration: 1,
+    console.log("play animation");
+    // Set the initial clipPath here to match the starting state
+    gsap.to(
+      "#videoframe-section",
+
+      {
+        width: "100%", // Change width to full
+        height: "100%", // Change height to full
+        duration: 1.5,
         ease: "power1.inOut",
+
         onComplete: () => {
           setisIntroVideoPlaying(false); // Hide the intro after animation
         },
-      });
-    }
+      }
+    );
   }
 
-  useEffect(() => {
-    if (isIntroVideoPlaying && introRef.current) {
-      gsap.set(introRef.current, {
-        clipPath:
-          "polygon(0 0, 0% 100%, 25% 100%, 25% 25%, 75% 25%, 25% 25%, 25% 75%, 25% 100%, 100% 100%, 100% 0%)", // Fullscreen
-      });
-    }
-  }, [isIntroVideoPlaying]);
+  // useEffect(() => {
+  //   if (isIntroVideoPlaying && introRef.current) {
+  //     gsap.set(introRef.current, {
+  //       clipPath:
+  //         "polygon(0 0, 0% 100%, 25% 100%, 25% 25%, 75% 25%, 25% 25%, 25% 75%, 25% 100%, 100% 100%, 100% 0%)", // Fullscreen
+  //     });
+  //   }
+  // }, [isIntroVideoPlaying]);
   useGSAP(
     () => {
       if (hasClicked) {
@@ -100,21 +105,24 @@ export default function Hero() {
   );
 
   useGSAP(() => {
-    gsap.set("#video-frame", {
-      clipPath: "polygon(7% 14%, 80% 0%, 90% 90%, 0 82%)",
-      borderRadius: "10% 30% 40% 20%",
-    });
-    gsap.from("#video-frame", {
-      clipPath: "polygon(0% 0%, 100% 0%, 100% 100%, 0 100%)",
-      borderRadius: "0 0 0 0 ",
-      ease: "power1.inOut",
-      scrollTrigger: {
-        trigger: "#video-frame",
-        start: "center center",
-        end: "bottom top",
-        scrub: true,
+    gsap.fromTo(
+      "#video-frame",
+      {
+        clipPath: "polygon(0% 0%, 100% 0%, 100% 100%, 0 100%)", // Starting state
+        borderRadius: "0 0 0 0",
       },
-    });
+      {
+        clipPath: "polygon(7% 14%, 80% 0%, 90% 90%, 0 82%)", // Ending state
+        borderRadius: "10% 30% 40% 20%",
+        ease: "power1.inOut",
+        scrollTrigger: {
+          trigger: "#video-frame",
+          start: "center center",
+          end: "bottom top",
+          scrub: true,
+        },
+      }
+    );
   }, []);
   //
   const [isMouseOver, setIsMouseOver] = useState(false); // Track whether mouse is over the video
@@ -198,7 +206,7 @@ export default function Hero() {
       )}
       {isIntroVideoPlaying && (
         <div
-          className="flex-center absolute z-[90] h-dvh w-screen overflow-hidden bg-black"
+          className="flex-center absolute z-10 h-dvh w-screen overflow-hidden bg-black"
           ref={introRef}
         >
           <div>
@@ -214,118 +222,117 @@ export default function Hero() {
           </div>
         </div>
       )}
-      <div
-        id="video-frame"
-        className=" relative z-10 h-dvh w-screen overflow-hidden rounded-sm bg-blue-75"
+
+      <section
+        id="videoframe-section"
+        className="overflow-hidden relative z-10 w-0 h-0"
       >
-        {/* Black layer with low opacity */}
-        <div className="absolute left-0 top-0 z-30 h-full w-full bg-black opacity-30 pointer-events-none"></div>
-        {/* Preload other unrendered  videos */}
-        <div className="invisible">
-          <video
-            src={getVideoSrc(3)}
-            muted
-            preload="auto"
-            onLoadedData={handleVideoLoad}
-          />
-          <video
-            src={getVideoSrc(4)}
-            muted
-            preload="auto"
-            onLoadedData={handleVideoLoad}
-          />
-        </div>
-        <div>
-          {/* mivi video */}
-          <div
-            className={`absolute-center absolute z-50 size-64 cursor-pointer overflow-hidden rounded-xl scale-100  `}
-            ref={hoverElementRef}
-            onMouseMove={handleMouseEnter}
-            onMouseLeave={handleMouseLeaveCenter}
-            style={{
-              transform: transformStyle,
-              transition: "transform 0.1s linear",
-            }}
-          >
+        <div
+          id="video-frame"
+          className=" relative z-10 h-dvh w-screen overflow-hidden rounded-sm bg-blue-75"
+        >
+          {/* Black layer with low opacity */}
+          <div className="absolute left-0 top-0 z-30 h-full w-full bg-black opacity-30 pointer-events-none"></div>
+          {/* Preload other unrendered  videos */}
+          <div className="invisible">
+            <video
+              src={getVideoSrc(3)}
+              muted
+              preload="auto"
+              onLoadedData={handleVideoLoad}
+            />
+            <video
+              src={getVideoSrc(4)}
+              muted
+              preload="auto"
+              onLoadedData={handleVideoLoad}
+            />
+          </div>
+          <div>
+            {/* mivi video */}
             <div
-              onClick={handleMiniVideoClick}
-              ref={videoContainerRef}
-              className="origin-center!  transition-all duration-500 ease-in scale-[0.001]   "
+              className={`absolute-center absolute z-50 size-64 cursor-pointer overflow-hidden rounded-xl scale-100  `}
+              ref={hoverElementRef}
+              onMouseMove={handleMouseEnter}
+              onMouseLeave={handleMouseLeaveCenter}
               style={{
-                transform: transformStyle1,
-                transition: "transform 1s linear",
+                transform: transformStyle,
+                transition: "transform 0.1s linear",
               }}
             >
-              <video
-                ref={nextVideoRef}
-                src={getVideoSrc(upcomingVideoIndex)}
-                loop
-                muted
-                id="current-video"
-                className="size-64 origin-center object-cover object-center border rounded-xl border-slate-700 "
-                onLoadedData={handleVideoLoad}
-                preload="auto"
-              />
+              <div
+                onClick={handleMiniVideoClick}
+                ref={videoContainerRef}
+                className="origin-center!  transition-all duration-500 ease-in scale-[0.001]   "
+                style={{
+                  transform: transformStyle1,
+                  transition: "transform 1s linear",
+                }}
+              >
+                <video
+                  ref={nextVideoRef}
+                  src={getVideoSrc(upcomingVideoIndex)}
+                  loop
+                  muted
+                  id="current-video"
+                  className="size-64 origin-center object-cover object-center border rounded-xl border-slate-700 "
+                  onLoadedData={handleVideoLoad}
+                  preload="auto"
+                />
+              </div>
+            </div>
+            <video
+              ref={nextVideoRef}
+              src={getVideoSrc(currentIndex)}
+              loop
+              muted
+              id="next-video"
+              className="absolute-center invisible absolute z-20 size-64 object-cover object-center"
+              onLoadedData={handleVideoLoad}
+              preload="auto"
+            />
+            <video
+              src={getVideoSrc(
+                delayedIndex === totalVideos - 1 ? 1 : delayedIndex
+              )}
+              autoPlay
+              loop
+              muted
+              className="absolute left-0 top-0 size-full object-cover object-center"
+              onLoadedData={handleVideoLoad}
+              preload="auto"
+            />
+          </div>
+          <div className="absolute bottom-10 right-10 z-40 ">
+            <img
+              src="img/afk-logo.png"
+              className=" w-24 sm:w-40 md:w-64 lg:w-96 object-contain"
+            />
+          </div>
+          <div className="dow-content z-50 bottom-10 md:bottom-16 left-10 absolute  ">
+            <a href="https://vda.afkjourney.com/pc_dl/com.farlightgames.igame.pc/a0f2a6caf27db1e96b33411c52f11817">
+              <img src="/img/dow_windows.png" className="imga dow-btn" />
+            </a>
+            <a href="https://play.google.com/store/apps/details?id=com.farlightgames.igame.gp">
+              <img src="/img/dow_googleplay.png" className="imga dow-btn" />
+            </a>
+            <a href="https://apps.apple.com/app/afk-journey/id1628970855">
+              <img src="/img/dow_appstore.png" className="imga dow-btn" />
+            </a>
+          </div>
+          <div className="absolute left-0 top-0 z-40 size-full">
+            <div className="mt-24 px-6 sm:px-12">
+              <p className="font-robert-regular text-blue-100 md:text-2xl text-base uppercase">
+                From the creator of Afk Arena
+              </p>
+              <h1 className="special-font hero-heading text-blue-100">
+                New Journey <br /> is waiting
+              </h1>
             </div>
           </div>
-          <video
-            ref={nextVideoRef}
-            src={getVideoSrc(currentIndex)}
-            loop
-            muted
-            id="next-video"
-            className="absolute-center invisible absolute z-20 size-64 object-cover object-center"
-            onLoadedData={handleVideoLoad}
-            preload="auto"
-          />
-          <video
-            src={getVideoSrc(
-              delayedIndex === totalVideos - 1 ? 1 : delayedIndex
-            )}
-            autoPlay
-            loop
-            muted
-            className="absolute left-0 top-0 size-full object-cover object-center"
-            onLoadedData={handleVideoLoad}
-            preload="auto"
-          />
         </div>
-        <div className="absolute bottom-10 right-10 z-40 ">
-          <img
-            src="img/afk-logo.png"
-            className=" w-24 sm:w-40 md:w-64 lg:w-96 object-contain"
-          />
-        </div>
-        <div className="dow-content z-50 bottom-10 md:bottom-16 left-10 absolute  ">
-          <a href="https://vda.afkjourney.com/pc_dl/com.farlightgames.igame.pc/a0f2a6caf27db1e96b33411c52f11817">
-            <img src="/img/dow_windows.png" className="imga dow-btn" />
-          </a>
-          <a href="https://play.google.com/store/apps/details?id=com.farlightgames.igame.gp">
-            <img src="/img/dow_googleplay.png" className="imga dow-btn" />
-          </a>
-          <a href="https://apps.apple.com/app/afk-journey/id1628970855">
-            <img src="/img/dow_appstore.png" className="imga dow-btn" />
-          </a>
-        </div>
-        <div className="absolute left-0 top-0 z-40 size-full">
-          <div className="mt-24 px-6 sm:px-12">
-            <p className="font-robert-regular text-blue-100 md:text-2xl text-base uppercase">
-              From the creator of Afk Arena
-            </p>
-            <h1 className="special-font hero-heading text-blue-100">
-              New Journey <br /> is waiting
-            </h1>
-            {/* 
-            <Button
-              id="watch-trailer"
-              title="Watch Trailer"
-              leftIcon={<TiLocationArrow />}
-              containerClass="bg-yellow-200 flex-center gap-1 text-[#4A403E] button-hover-effect hover:brightness-110 hover:text-black"
-              href="https://www.youtube.com/watch?v=OiO6X_zL_w8"
-            /> */}
-          </div>
-        </div>
-      </div>
+      </section>
+
       <div className="absolute bottom-10 right-10 invert ">
         <img
           src="img/afk-logo.png"
