@@ -11,10 +11,13 @@ import GameFeaturesMobile from "./components/GameFeatureMobile";
 import Lenis from "lenis";
 import UpdateSection from "./components/UpdateSection";
 export default function App() {
+  const [lenis, setLenis] = useState<Lenis | null>(null);
+
   useEffect(() => {
-    const lenis = new Lenis();
+    const lenisInstance = new Lenis();
+    setLenis(lenisInstance);
     function raf(time: DOMHighResTimeStamp) {
-      lenis.raf(time);
+      lenisInstance.raf(time);
       requestAnimationFrame(raf);
     }
     requestAnimationFrame(raf);
@@ -57,7 +60,7 @@ export default function App() {
   const isMobile = useMediaQuery("(max-width: 830px)");
   return (
     <main className="relative min-h-screen w-screen overflow-x-hidden  ">
-      <Navbar />
+      <Navbar lenis={lenis} />
       <Hero />
       <About />
       <Features />

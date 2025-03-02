@@ -3,8 +3,18 @@ import { useEffect, useRef, useState } from "react";
 import { useWindowScroll } from "react-use";
 import gsap from "gsap";
 import Button from "./Button";
-const navItems = ["Heros", "Maps", "Features", "News"];
-export default function Navbar() {
+import Lenis from "lenis";
+const navItems = [
+  { label: "Heros", id: "hero" },
+  { label: "Maps", id: "map" },
+  { label: "Features", id: "features" },
+  { label: "News", id: "News" },
+];
+
+interface NavbarProps {
+  lenis: Lenis | null;
+}
+export default function Navbar({ lenis }: NavbarProps) {
   const [isAudioPlaying, setisAudioPlaying] = useState(false);
   const [isIndicatorActive, setisIndicatorActive] = useState(false);
   const [lastScrollY, setlastScrollY] = useState(0);
@@ -14,6 +24,7 @@ export default function Navbar() {
   const navContainerRef = useRef<HTMLDivElement>(null);
   const audioElementRef = useRef<HTMLAudioElement>(null);
   const { y: currentScrollY } = useWindowScroll();
+
   function toggleAudioIndicator() {
     setisAudioPlaying((prev) => !prev);
     setisIndicatorActive((prev) => !prev);
@@ -50,6 +61,16 @@ export default function Navbar() {
       audioElementRef.current!.pause();
     }
   }, [isAudioPlaying]);
+
+  //handle scroll to section
+  const handleNavClick = (id: string) => {
+    if (lenis) {
+      lenis.scrollTo(`#${id}`, {
+        duration: 1.2,
+        easing: (t) => 1 - Math.pow(1 - t, 3),
+      });
+    }
+  };
   return (
     <div
       ref={navContainerRef}
@@ -71,14 +92,14 @@ export default function Navbar() {
           <div className="flex h-full items-center">
             <div className="hidden md:block ">
               {navItems.map((item) => (
-                <a
-                  key={item}
-                  href={`#${item.toLowerCase()}`}
+                <button
+                  key={item.id}
+                  onClick={() => handleNavClick(item.id)}
                   className={`nav-hover-btn duration-500 transition-colors 
                    `}
                 >
-                  {item}
-                </a>
+                  {item.label}
+                </button>
               ))}
             </div>
             <button

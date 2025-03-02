@@ -34,7 +34,7 @@ export default function Features() {
   }, []);
 
   return (
-    <section className="pb-52">
+    <section className="pb-52" id="hero">
       <div className="container mx-auto px-3 md:px-10">
         <div className="px-5 py-32">
           <p className="font-circular-web text-lg text-blue-50">

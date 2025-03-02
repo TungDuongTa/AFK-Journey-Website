@@ -134,7 +134,7 @@ export default function Map() {
     }
   }, []);
   return (
-    <div className="relative  pt-80 md:pt-60 lg:pt-96">
+    <div className="relative  pt-80 md:pt-60 lg:pt-96" id="map">
       {/* Big background absolute div with mask */}
       <div className="maps-bg">
         <img

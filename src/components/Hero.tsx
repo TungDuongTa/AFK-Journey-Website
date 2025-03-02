@@ -3,6 +3,8 @@ import { useEffect, useRef, useState } from "react";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/all";
+import FullScreenVideo from "./FullScreenVideo";
+import FullScreenLoader from "./FullScreenLoader";
 
 gsap.registerPlugin(ScrollTrigger);
 export default function Hero() {
@@ -15,7 +17,6 @@ export default function Hero() {
   const [delayedIndex, setDelayedIndex] = useState(currentIndex);
   const totalVideos = 4;
   const nextVideoRef = useRef<HTMLVideoElement | null>(null);
-  const introRef = useRef<HTMLDivElement | null>(null);
 
   function handleMiniVideoClick() {
     if (!isClickable) return; // Prevent click if not clickable
@@ -65,14 +66,6 @@ export default function Hero() {
     );
   }
 
-  // useEffect(() => {
-  //   if (isIntroVideoPlaying && introRef.current) {
-  //     gsap.set(introRef.current, {
-  //       clipPath:
-  //         "polygon(0 0, 0% 100%, 25% 100%, 25% 25%, 75% 25%, 25% 25%, 25% 75%, 25% 100%, 100% 100%, 100% 0%)", // Fullscreen
-  //     });
-  //   }
-  // }, [isIntroVideoPlaying]);
   useGSAP(
     () => {
       if (hasClicked) {
@@ -104,27 +97,6 @@ export default function Hero() {
     { dependencies: [currentIndex], revertOnUpdate: true }
   );
 
-  useGSAP(() => {
-    gsap.fromTo(
-      "#video-frame",
-      {
-        clipPath: "polygon(0% 0%, 100% 0%, 100% 100%, 0 100%)", // Starting state
-        borderRadius: "0 0 0 0",
-      },
-      {
-        clipPath: "polygon(7% 14%, 80% 0%, 90% 90%, 0 82%)", // Ending state
-        borderRadius: "10% 30% 40% 20%",
-        ease: "power1.inOut",
-        scrollTrigger: {
-          trigger: "#video-frame",
-          start: "center center",
-          end: "bottom top",
-          scrub: true,
-        },
-      }
-    );
-  }, []);
-  //
   const [isMouseOver, setIsMouseOver] = useState(false); // Track whether mouse is over the video
   const hoverElementRef = useRef<HTMLDivElement>(null);
   const videoContainerRef = useRef<HTMLDivElement>(null);
@@ -195,33 +167,11 @@ export default function Hero() {
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
     >
-      {isLoading && (
-        <div className="flex-center absolute z-[100] h-dvh w-screen overflow-hidden bg-violet-50 ">
-          <div className="three-body">
-            <div className="three-body__dot"></div>
-            <div className="three-body__dot"></div>
-            <div className="three-body__dot"></div>
-          </div>
-        </div>
-      )}
-      {isIntroVideoPlaying && (
-        <div
-          className="flex-center absolute z-10 h-dvh w-screen overflow-hidden bg-black"
-          ref={introRef}
-        >
-          <div>
-            <video
-              src="videos/loadingVideo.mp4"
-              loop={false}
-              muted
-              autoPlay
-              onEnded={handleIntroVideoEnd} // Call when video finishes
-              className=""
-              preload="auto"
-            />
-          </div>
-        </div>
-      )}
+      <FullScreenLoader isLoading={isLoading} />
+      <FullScreenVideo
+        isPlaying={isIntroVideoPlaying}
+        onEnded={handleIntroVideoEnd}
+      />
 
       <section
         id="videoframe-section"

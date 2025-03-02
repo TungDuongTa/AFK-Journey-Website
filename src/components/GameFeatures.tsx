@@ -35,7 +35,7 @@ export default function GameFeatures() {
     });
   }, []);
   return (
-    <div className="index-game relative ">
+    <div className="index-game relative " id="features">
       {/* bg div */}
       <div className="game-bg current">
         <img
