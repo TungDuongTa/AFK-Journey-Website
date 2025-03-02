@@ -184,7 +184,7 @@ export default function Hero() {
           {/* Black layer with low opacity */}
           <div className="absolute left-0 top-0 z-30 h-full w-full bg-black opacity-30 pointer-events-none"></div>
           {/* Preload other unrendered  videos */}
-          <div className="invisible">
+          {/* <div className="invisible">
             <video
               src={getVideoSrc(3)}
               muted
@@ -197,7 +197,7 @@ export default function Hero() {
               preload="auto"
               onLoadedData={handleVideoLoad}
             />
-          </div>
+          </div> */}
           <div>
             {/* mivi video */}
             <div

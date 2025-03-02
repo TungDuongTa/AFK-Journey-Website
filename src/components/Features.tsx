@@ -94,6 +94,7 @@ export default function Features() {
               <div className="flex size-full overflow-hidden relative px-6 py-8 md:px-6 md:py-6">
                 <img
                   src="videos/feature1-6.jpg"
+                  loading="lazy"
                   className="absolute left-0 top-0 object-cover object-center size-full"
                 />
 
@@ -110,6 +111,7 @@ export default function Features() {
                 loop
                 muted
                 autoPlay
+                preload="none"
                 className="size-full object-cover object-center  "
               />
             </BentoTilt>

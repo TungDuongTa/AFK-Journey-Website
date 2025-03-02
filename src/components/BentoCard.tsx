@@ -16,6 +16,7 @@ export default function BentoCard({ src, title, description }: BentoCardProps) {
     >
       <video
         src={src}
+        preload="none"
         loop
         muted
         autoPlay
