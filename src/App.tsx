@@ -10,6 +10,8 @@ import NewsMobile from "./components/NewsMobile";
 import GameFeaturesMobile from "./components/GameFeatureMobile";
 import Lenis from "lenis";
 import UpdateSection from "./components/UpdateSection";
+import { Route, Routes } from "react-router";
+import NewsPage from "./components/NewsPage";
 export default function App() {
   const [lenis, setLenis] = useState<Lenis | null>(null);
 
@@ -59,15 +61,25 @@ export default function App() {
   };
   const isMobile = useMediaQuery("(max-width: 830px)");
   return (
-    <main className="relative min-h-screen w-screen overflow-x-hidden  ">
+    <>
       <Navbar lenis={lenis} />
-      <Hero />
-      <About />
-      <Features />
-      <Map />
-      {isMobile ? <GameFeaturesMobile /> : <GameFeatures />}
-      {isMobile ? <NewsMobile /> : <News />}
-      <UpdateSection />
-    </main>
+      <Routes>
+        <Route
+          path="/"
+          element={
+            <main className="relative min-h-screen w-screen overflow-x-hidden  ">
+              <Hero />
+              <About />
+              <Features />
+              <Map />
+              {isMobile ? <GameFeaturesMobile /> : <GameFeatures />}
+              {isMobile ? <NewsMobile /> : <News />}
+              <UpdateSection />
+            </main>
+          }
+        />
+        <Route path="/news" element={<NewsPage />} />
+      </Routes>
+    </>
   );
 }

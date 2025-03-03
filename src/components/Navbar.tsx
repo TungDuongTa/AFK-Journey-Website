@@ -2,7 +2,7 @@ import { useGSAP } from "@gsap/react";
 import { useEffect, useRef, useState } from "react";
 import { useWindowScroll } from "react-use";
 import gsap from "gsap";
-import Button from "./Button";
+// import Button from "./Button";
 import Lenis from "lenis";
 const navItems = [
   { label: "Heros", id: "hero" },
@@ -19,7 +19,7 @@ export default function Navbar({ lenis }: NavbarProps) {
   const [isIndicatorActive, setisIndicatorActive] = useState(false);
   const [lastScrollY, setlastScrollY] = useState(0);
   const [isNavVisible, setisNavVisible] = useState(true);
-  const [showButton, setShowButton] = useState(false);
+  // const [showButton, setShowButton] = useState(false);
 
   const navContainerRef = useRef<HTMLDivElement>(null);
   const audioElementRef = useRef<HTMLAudioElement>(null);
@@ -33,15 +33,15 @@ export default function Navbar({ lenis }: NavbarProps) {
     if (currentScrollY === 0) {
       setisNavVisible(true);
       navContainerRef.current?.classList.remove("floating-nav");
-      setShowButton(false);
+      // setShowButton(false);
     } else if (currentScrollY > lastScrollY) {
       setisNavVisible(false);
       navContainerRef.current?.classList.add("floating-nav");
-      setShowButton(false);
+      // setShowButton(false);
     } else if (currentScrollY < lastScrollY) {
       setisNavVisible(true);
       navContainerRef.current?.classList.add("floating-nav");
-      setShowButton(true);
+      // setShowButton(true);
     }
     setlastScrollY(currentScrollY);
   }, [currentScrollY, lastScrollY]);
@@ -80,14 +80,14 @@ export default function Navbar({ lenis }: NavbarProps) {
         <nav className="flex size-full items-center justify-between p-4">
           <div className="flex items-center gap-7">
             <img src="/img/afk-logo.png" alt="logo " className="w-20" />
-            {showButton && (
+            {/* {showButton && (
               <Button
                 id="product-button"
                 title="Google Play"
                 leftIcon={<img src="google-play.png" width={18} />}
                 containerClass="bg-blue-50 md:flex hidden items-center justify-center gap-1 rounded-full"
               />
-            )}
+            )} */}
           </div>
           <div className="flex h-full items-center">
             <div className="hidden md:block ">
