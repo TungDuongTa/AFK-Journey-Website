@@ -4,6 +4,7 @@ import { useWindowScroll } from "react-use";
 import gsap from "gsap";
 // import Button from "./Button";
 import Lenis from "lenis";
+import { Link } from "react-router";
 const navItems = [
   { label: "Heros", id: "hero" },
   { label: "Maps", id: "map" },
@@ -79,7 +80,10 @@ export default function Navbar({ lenis }: NavbarProps) {
       <header className="absolute top-1/2 w-full -translate-y-1/2">
         <nav className="flex size-full items-center justify-between p-4">
           <div className="flex items-center gap-7">
-            <img src="/img/afk-logo.png" alt="logo " className="w-20" />
+            <Link to="/">
+              <img src="/img/afk-logo.png" alt="logo " className="w-20" />
+            </Link>
+
             {/* {showButton && (
               <Button
                 id="product-button"

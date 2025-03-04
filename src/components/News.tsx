@@ -2,6 +2,7 @@ import gsap from "gsap";
 import ScrollTrigger from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
 import { useRef } from "react";
+import { Link } from "react-router";
 gsap.registerPlugin(ScrollTrigger);
 export default function News() {
   const newsItems = [
@@ -101,17 +102,18 @@ export default function News() {
                 </li>
               ))}
             </ul>
-            <a
-              target="_blank"
-              className="cursor-pointer w-full flex justify-end"
+            <div
+              className=" w-full flex justify-end"
               style={{ paddingRight: "var(--size-40)" }}
             >
-              <img
-                src="img/more-news.png"
-                className="imga"
-                style={{ width: "calc(var(--size-130) * 2)" }}
-              />
-            </a>
+              <Link to="/news" className="cursor-pointer">
+                <img
+                  src="img/more-news.png"
+                  className="imga"
+                  style={{ width: "calc(var(--size-130) * 2)" }}
+                />
+              </Link>
+            </div>
           </div>
         </div>
       </div>

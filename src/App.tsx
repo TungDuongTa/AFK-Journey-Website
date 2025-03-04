@@ -12,6 +12,8 @@ import Lenis from "lenis";
 import UpdateSection from "./components/UpdateSection";
 import { Route, Routes } from "react-router";
 import NewsPage from "./components/NewsPage";
+import NewsPageDetail from "./components/NewsPageDetail";
+import ScrollToTop from "./components/ScrollToTop";
 export default function App() {
   const [lenis, setLenis] = useState<Lenis | null>(null);
 
@@ -62,12 +64,13 @@ export default function App() {
   const isMobile = useMediaQuery("(max-width: 830px)");
   return (
     <>
-      <Navbar lenis={lenis} />
+      <ScrollToTop />
       <Routes>
         <Route
           path="/"
           element={
             <main className="relative min-h-screen w-screen overflow-x-hidden  ">
+              <Navbar lenis={lenis} />
               <Hero />
               <About />
               <Features />
@@ -78,7 +81,8 @@ export default function App() {
             </main>
           }
         />
-        <Route path="/news" element={<NewsPage />} />
+        <Route path="/news" element={<NewsPage lenis={lenis} />} />
+        <Route path="/news/:id" element={<NewsPageDetail />} />
       </Routes>
     </>
   );

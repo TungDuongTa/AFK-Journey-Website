@@ -1,4 +1,20 @@
-export default function NewsPage() {
+import Lenis from "lenis";
+import { newsItems } from "../constants/NewsData";
+import { Link } from "react-router";
+
+interface NewsPageProps {
+  lenis: Lenis | null;
+}
+
+export default function NewsPage({ lenis }: NewsPageProps) {
+  const scrollToTop = () => {
+    if (lenis) {
+      lenis.scrollTo(0, {
+        duration: 1.2,
+        easing: (t: number) => 1 - Math.pow(1 - t, 3),
+      });
+    }
+  };
   return (
     <main>
       <div className="detail-top relative">
@@ -23,57 +39,61 @@ export default function NewsPage() {
           className="list flex flex-col gap-[1.5625vw] pb-[4.2708vw] relative items-center"
           data-v-ad615414
         >
-          <a href="/" className="go_back" data-v-ad615414>
+          <Link to="/" className="go_back" data-v-ad615414>
             <img src="/img/detail-return.png" alt="icon-top" className="imga" />
-          </a>
+          </Link>
           <div
-            className="go_top fixed right-[1.0938vw] width-[3.2813vw]"
+            className="go_top fixed right-[1.0938vw] width-[3.2813vw] cursor-pointer"
             data-v-ad615414
+            onClick={scrollToTop}
           >
             <img src="/img/nl13.png" alt="icon-top" className="imga" />
           </div>
           {/* //content */}
-          <a href="/" className="item" data-v-ad615414>
-            <div className="info" data-v-ad615414>
-              <div className="title_r" data-v-ad615414>
-                <i className="icon transition" data-v-ad615414></i>
-                <div
-                  className="title transition l-font42 leading-[1.25] "
-                  data-v-ad615414
-                >
-                  AFK Journey 1.3.2 Patch Notes
+          {/* Render News Items */}
+          {newsItems.map((item, index) => (
+            <a href={item.link} className="item" key={index} data-v-ad615414>
+              <div className="info" data-v-ad615414>
+                <div className="title_r" data-v-ad615414>
+                  <i className="icon transition" data-v-ad615414></i>
+                  <div
+                    className="title transition l-font42 leading-[1.25]"
+                    data-v-ad615414
+                  >
+                    {item.title}
+                  </div>
+                </div>
+                <div className="line" data-v-ad615414>
+                  <img
+                    src={item.iconImage}
+                    alt="icon-top"
+                    className="imga"
+                    data-v-ad615414
+                  />
+                </div>
+                <div className="desc l-font18 leading-[1.5]" data-v-ad615414>
+                  {item.description}
+                </div>
+                <div className="date" data-v-ad615414>
+                  {item.date}
                 </div>
               </div>
-              <div className="line" data-v-ad615414>
-                <img src="/img/nl11.png" alt="icon-top" className="imga" />
+              <div className="img" data-v-ad615414>
+                <img
+                  src={item.mainImage}
+                  className="imga"
+                  alt="img"
+                  data-v-ad615414
+                />
+                <img
+                  src={item.outImage}
+                  alt="outimg"
+                  className="outimg"
+                  data-v-ad615414
+                />
               </div>
-              <div className="desc  l-font18 leading-[1.5]" data-v-ad615414>
-                In order to improve your game experience, the server will
-                undergo maintenance on February 20 from 02:30 to 03:30 UTC to
-                update to Version 1.3.2. You will not be able to log in during
-                this time. For the safety of your account data, please exit the
-                game before the maintenance begins. We apologize for any
-                inconvenience this may cause.
-              </div>
-              <div className="date" data-v-ad615414>
-                02/19/2025
-              </div>
-            </div>
-            <div className="img" data-v-ad615414>
-              <img
-                src="https://ad-gw-i2404029.farlightgames.com/assets/a8bca1fb-0237-4d1e-9b12-7b2665b2a9a0?width=452"
-                className="imga"
-                alt="img"
-                data-v-ad615414
-              />
-              <img
-                src="/img/nl22.png"
-                alt="outimg"
-                className="outimg"
-                data-v-ad615414
-              />
-            </div>
-          </a>
+            </a>
+          ))}
         </div>
       </div>
     </main>

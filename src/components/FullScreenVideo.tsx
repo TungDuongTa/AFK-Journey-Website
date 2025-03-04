@@ -14,14 +14,14 @@ export default function FullScreenVideo({
   if (!isPlaying) return null; // Don't render if not playing
 
   return (
-    <div className="flex-center fixed inset-0 z-50 bg-black">
+    <div className="flex-center fixed inset-0 z-50 bg-black ">
       <video
         ref={videoRef}
         src="videos/loadingVideo.mp4"
         autoPlay
         muted
         onEnded={onEnded}
-        className="w-full h-full object-cover"
+        className="w-full h-auto object-cover aspect-video"
         preload="auto"
       />
     </div>

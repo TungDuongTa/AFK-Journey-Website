@@ -48,22 +48,7 @@ export default function Hero() {
     }
   }, [loadedVideos]);
   function handleIntroVideoEnd() {
-    console.log("play animation");
-    // Set the initial clipPath here to match the starting state
-    gsap.to(
-      "#videoframe-section",
-
-      {
-        width: "100%", // Change width to full
-        height: "100%", // Change height to full
-        duration: 1.5,
-        ease: "power1.inOut",
-
-        onComplete: () => {
-          setisIntroVideoPlaying(false); // Hide the intro after animation
-        },
-      }
-    );
+    setisIntroVideoPlaying(false); // Hide the intro after animation
   }
 
   useGSAP(
@@ -175,7 +160,7 @@ export default function Hero() {
 
       <section
         id="videoframe-section"
-        className="overflow-hidden relative z-10 w-0 h-0"
+        className="overflow-hidden relative z-10 w-full h-full"
       >
         <div
           id="video-frame"
