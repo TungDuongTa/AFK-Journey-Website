@@ -3,18 +3,9 @@ import ScrollTrigger from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
 import { useRef } from "react";
 import { Link } from "react-router";
+import { newsItems } from "../constants/NewsData";
 gsap.registerPlugin(ScrollTrigger);
 export default function News() {
-  const newsItems = [
-    { title: "Winter Carnival: History and Traditions", date: "12/23/2024" },
-    {
-      title:
-        "1.2.4 Patch Update: Winter Carnival, New Quest,Combat Crucible, More",
-      date: "12/19/2024",
-    },
-    { title: "Hugin - Maverick Smith | Journey Unfolds", date: "12/18/2024" },
-    { title: "AFK Journey 1.2.4 Patch Notes", date: "12/18/2024" },
-  ];
   const titleRef = useRef<HTMLDivElement>(null);
   const newsRef = useRef<HTMLDivElement>(null);
   const iconRef = useRef<HTMLDivElement>(null);
@@ -90,15 +81,15 @@ export default function News() {
               </span>
             </div>
             <ul className="news-item l-font16 ">
-              {newsItems.map((item, index) => (
+              {newsItems.slice(0, 4).map((item, index) => (
                 <li key={index}>
-                  <a target="_blank" className="cursor-pointer">
+                  <Link to={`/news/${item.id}`} className="cursor-pointer">
                     <div className="left">
                       <i></i>
                       <span className="line-clamp-1 lines">{item.title}</span>
                     </div>
                     <div className="right">{item.date}</div>
-                  </a>
+                  </Link>
                 </li>
               ))}
             </ul>

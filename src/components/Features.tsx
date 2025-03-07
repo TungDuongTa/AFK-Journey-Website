@@ -37,11 +37,9 @@ export default function Features() {
     <section className="pb-52" id="hero">
       <div className="container mx-auto px-3 md:px-10">
         <div className="px-5 py-32">
-          <p className="font-circular-web text-lg text-blue-50">
-            Met The Characters
-          </p>
+          <p className="noto text-lg text-blue-50">Met The Characters</p>
 
-          <p className="max-w-md font-circular-web text-lg text-blue-50 opacity-50">
+          <p className="max-w-md noto text-lg text-blue-50 opacity-50">
             Explore the journeys of unique characters as their fates intertwine
             with the world around them, filled with mystery, danger, and hope.
           </p>

@@ -52,7 +52,12 @@ export default function NewsPage({ lenis }: NewsPageProps) {
           {/* //content */}
           {/* Render News Items */}
           {newsItems.map((item, index) => (
-            <a href={item.link} className="item" key={index} data-v-ad615414>
+            <Link
+              to={`/news/${item.id}`}
+              className="item"
+              key={index}
+              data-v-ad615414
+            >
               <div className="info" data-v-ad615414>
                 <div className="title_r" data-v-ad615414>
                   <i className="icon transition" data-v-ad615414></i>
@@ -92,7 +97,7 @@ export default function NewsPage({ lenis }: NewsPageProps) {
                   data-v-ad615414
                 />
               </div>
-            </a>
+            </Link>
           ))}
         </div>
       </div>

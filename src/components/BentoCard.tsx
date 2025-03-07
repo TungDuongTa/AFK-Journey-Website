@@ -8,7 +8,7 @@ interface BentoCardProps {
 export default function BentoCard({ src, title, description }: BentoCardProps) {
   return (
     <div
-      className="relative size-full"
+      className="relative size-full noto"
       style={{
         textShadow:
           "-1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000",
@@ -24,7 +24,7 @@ export default function BentoCard({ src, title, description }: BentoCardProps) {
       />
       <div className="relative z-10 flex size-full flex-col justify-between p-5 text-blue-50">
         <div>
-          <h1 className="bento-title special-font"> {title}</h1>
+          <h1 className="bento-title noto"> {title}</h1>
           {description && (
             <p className="mt-3 max-w-64 text-xs md:text-base">{description}</p>
           )}

@@ -69,7 +69,7 @@ export default function App() {
         <Route
           path="/"
           element={
-            <main className="relative min-h-screen w-screen overflow-x-hidden  ">
+            <main className="relative min-h-screen w-screen overflow-x-hidden noto  ">
               <Navbar lenis={lenis} />
               <Hero />
               <About />

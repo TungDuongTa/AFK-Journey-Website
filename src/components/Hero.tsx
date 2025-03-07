@@ -7,12 +7,23 @@ import FullScreenVideo from "./FullScreenVideo";
 import FullScreenLoader from "./FullScreenLoader";
 
 gsap.registerPlugin(ScrollTrigger);
+
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "../store/store";
+import { setInTroVideoPlayTime } from "../store/introVideoSlice";
+
 export default function Hero() {
+  const dispatch = useDispatch();
+  const inTroVideoPlayTime = useSelector(
+    (state: RootState) => state.introVideo.inTroVideoPlayTime
+  );
+
   const [currentIndex, setcurrentIndex] = useState(1);
   const [hasClicked, sethasClicked] = useState(false);
   const [isClickable, setIsClickable] = useState(true);
   const [isLoading, setisLoading] = useState(true);
   const [isIntroVideoPlaying, setisIntroVideoPlaying] = useState(false);
+
   const [loadedVideos, setloadedVideos] = useState(0);
   const [delayedIndex, setDelayedIndex] = useState(currentIndex);
   const totalVideos = 4;
@@ -44,11 +55,14 @@ export default function Hero() {
   useEffect(() => {
     if (loadedVideos === totalVideos - 1) {
       setisLoading(false);
-      setisIntroVideoPlaying(true); // Play the intro video
+      if (inTroVideoPlayTime === 0) {
+        setisIntroVideoPlaying(true); // Play the intro video
+      }
     }
-  }, [loadedVideos]);
+  }, [loadedVideos, inTroVideoPlayTime]);
   function handleIntroVideoEnd() {
     setisIntroVideoPlaying(false); // Hide the intro after animation
+    dispatch(setInTroVideoPlayTime(1));
   }
 
   useGSAP(
@@ -137,13 +151,13 @@ export default function Hero() {
     setIsMouseOver(false); // Mark mouse as over the video
   }
   useEffect(() => {
-    console.log("isMouseStopped:", isMouseStopped); // This will log the updated value
+    // console.log("isMouseStopped:", isMouseStopped); // This will log the updated value
     if (isMouseStopped && !isMouseOver) {
       const newTransform = `translate(-50%, -50%) perspective(700px) `; // Add scale for depth effect
       setTransformStyle(newTransform);
       setTransformStyle1(" scale(0.001)");
     }
-    console.log("isMouseOver:", isMouseOver); // This will log the updated value
+    // console.log("isMouseOver:", isMouseOver); // This will log the updated value
   }, [isMouseStopped, isMouseOver]);
   return (
     <div
@@ -257,10 +271,10 @@ export default function Hero() {
           </div>
           <div className="absolute left-0 top-0 z-40 size-full">
             <div className="mt-24 px-6 sm:px-12">
-              <p className="font-robert-regular text-blue-100 md:text-2xl text-base uppercase">
+              <p className="noto  text-blue-100 md:text-2xl text-base uppercase">
                 From the creator of Afk Arena
               </p>
-              <h1 className="special-font hero-heading text-blue-100">
+              <h1 className="noto hero-heading text-blue-100 ">
                 New Journey <br /> is waiting
               </h1>
             </div>

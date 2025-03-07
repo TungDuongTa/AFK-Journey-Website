@@ -75,7 +75,7 @@ export default function Navbar({ lenis }: NavbarProps) {
   return (
     <div
       ref={navContainerRef}
-      className="fixed inset-x-0 top-4 z-50 h-20 border-none transition-all duration-700 sm:inset-x-6"
+      className="fixed inset-x-0 top-4 z-50 h-20 border-none transition-all duration-700 sm:inset-x-6 noto"
     >
       <header className="absolute top-1/2 w-full -translate-y-1/2">
         <nav className="flex size-full items-center justify-between p-4">
@@ -99,7 +99,7 @@ export default function Navbar({ lenis }: NavbarProps) {
                 <button
                   key={item.id}
                   onClick={() => handleNavClick(item.id)}
-                  className={`nav-hover-btn duration-500 transition-colors 
+                  className={`nav-hover-btn duration-500 transition-colors noto
                    `}
                 >
                   {item.label}

@@ -33,16 +33,16 @@ export default function About() {
   return (
     <div id="about" className="min-h-screen w-screen ">
       <div className="relative mb-8 mt-36 flex flex-col items-center gap-5">
-        <h2 className="font-general text-sm uppercase md:text-[14px]">
+        <h2 className="noto text-sm uppercase md:text-[14px]">
           Welcome to AFK JOURNEY
         </h2>
         <AnimatedTitle
-          title="Disc<b>o</b>ver the world's <br /> largest shared <b>a</b>dventure"
+          title="Discover the world's <br /> largest shared adventure"
           containerClass="mt-5 !text-black text-center"
         />
 
         <div className="about-subtext">
-          <p>
+          <p className="">
             Experience the magic of AFK Journey, an innovative overworld fantasy
             RPG
           </p>

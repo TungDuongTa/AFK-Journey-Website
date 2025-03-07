@@ -4,6 +4,7 @@ export default {
   theme: {
     extend: {
       fontFamily: {
+        noto: ["noto", "sans-serif"],
         zentry: ["zentry", "sanf-serif"],
         general: ["general", "sanf-serif"],
         "circular-web": ["circular-web", "sanf-serif"],

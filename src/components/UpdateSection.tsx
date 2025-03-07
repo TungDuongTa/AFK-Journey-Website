@@ -29,7 +29,7 @@ export default function UpdateSection() {
         const sectionHeight = stickySection.offsetHeight; // Get the sticky section height
         setSectionHeight(sectionHeight);
         setTotalStickyHeight(sectionHeight * 2); // Update totalStickyHeight
-        console.log("Section Height:", sectionHeight);
+        // console.log("Section Height:", sectionHeight);
       }
     };
 

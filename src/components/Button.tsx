@@ -24,7 +24,7 @@ export default function Button({
     return (
       <a id={id} href={href} className={commonClasses} target="_blank">
         {leftIcon}
-        <span className="relative inline-flex overflow-hidden font-general text-xs  ">
+        <span className="relative inline-flex overflow-hidden noto text-xs  ">
           <div>{title}</div>
         </span>
         {rightIcon}

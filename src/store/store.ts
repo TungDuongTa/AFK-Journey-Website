@@ -1,9 +1,9 @@
-// redux/store.ts
 import { configureStore } from "@reduxjs/toolkit";
+import introVideoReducer from "./introVideoSlice";
 
 export const store = configureStore({
   reducer: {
-    // Add reducers here
+    introVideo: introVideoReducer,
   },
 });
 
