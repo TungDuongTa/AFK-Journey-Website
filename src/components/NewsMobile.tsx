@@ -2,18 +2,10 @@ import gsap from "gsap";
 import ScrollTrigger from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
 import { useRef } from "react";
+import { newsItems } from "../constants/NewsData";
+import { Link } from "react-router";
 gsap.registerPlugin(ScrollTrigger);
 export default function NewsMobile() {
-  const newsItems = [
-    { title: "aaaaaaa", date: "12/23/2024" },
-    {
-      title:
-        "1.2.4 Patch Update: Winter Carnival, New Quest,Combat Crucible, More",
-      date: "12/19/2024",
-    },
-    { title: "Hugin - Maverick Smith | Journey Unfolds", date: "12/18/2024" },
-    { title: "AFK Journey 1.2.4 Patch Notes", date: "12/18/2024" },
-  ];
   const titleRef = useRef<HTMLDivElement>(null);
   useGSAP(() => {
     // Set up GSAP animation
@@ -64,20 +56,20 @@ export default function NewsMobile() {
             </span>
           </div>
           <ul className="news-item l-font16 list-none ">
-            {newsItems.map((item, index) => (
+            {newsItems.slice(0, 4).map((item, index) => (
               <li key={index}>
-                <a target="_blank" className="cursor-pointer">
+                <Link to={`/news/${item.id}`} className="cursor-pointer">
                   <div className="left">
                     <i></i>
                     <span className="line-clamp-1 lines">{item.title}</span>
                   </div>
                   <div className="right">{item.date}</div>
-                </a>
+                </Link>
               </li>
             ))}
           </ul>
-          <a
-            target="_blank"
+          <Link
+            to="/news"
             className="cursor-pointer w-full flex justify-end"
             style={{ paddingRight: "var(--size-40)" }}
           >
@@ -86,7 +78,7 @@ export default function NewsMobile() {
               className="imga"
               style={{ width: "calc(var(--size-130) * 2)" }}
             />
-          </a>
+          </Link>
         </div>
       </div>
     </div>
