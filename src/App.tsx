@@ -18,31 +18,24 @@ export default function App() {
   const [lenis, setLenis] = useState<Lenis | null>(null);
 
   useEffect(() => {
+    // Initialize Lenis
     const lenisInstance = new Lenis();
-    setLenis(lenisInstance);
+
     function raf(time: DOMHighResTimeStamp) {
       lenisInstance.raf(time);
       requestAnimationFrame(raf);
     }
     requestAnimationFrame(raf);
+    setLenis(lenisInstance);
+    return () => lenisInstance.destroy(); // Clean up on unmount
   }, []);
 
   useEffect(() => {
-    // This will make sure to scroll to top after page reload
-    window.scrollTo(0, 0);
-
-    // Handle potential scroll position issues when loading
-    window.addEventListener("beforeunload", () => {
-      window.scrollTo(0, 0);
-    });
-
-    return () => {
-      // Cleanup listener on unmount
-      window.removeEventListener("beforeunload", () => {
-        window.scrollTo(0, 0);
-      });
-    };
-  }, []); // Empty dependency to run on initial mount
+    // Ensure scroll position resets on page reload
+    if (lenis) {
+      lenis.scrollTo(0, { immediate: true });
+    }
+  }, [lenis]);
 
   //screen size check to dynamic render
   const useMediaQuery = (query: string): boolean => {
@@ -61,10 +54,10 @@ export default function App() {
 
     return matches;
   };
-  const isMobile = useMediaQuery("(max-width: 830px)");
+  const isMobile = useMediaQuery("(max-width: 1024px)");
   return (
     <>
-      <ScrollToTop />
+      <ScrollToTop lenis={lenis} />
       <Routes>
         <Route
           path="/"
