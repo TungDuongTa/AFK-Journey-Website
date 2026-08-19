@@ -1,170 +1,568 @@
-import { useEffect, useRef, useState } from "react";
-
-import { useGSAP } from "@gsap/react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import gsap from "gsap";
-import { ScrollTrigger } from "gsap/all";
-import FullScreenVideo from "./FullScreenVideo";
-import FullScreenLoader from "./FullScreenLoader";
-
-gsap.registerPlugin(ScrollTrigger);
-
 import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "../store/store";
+
+import FullScreenLoader from "./FullScreenLoader";
+import FullScreenVideo from "./FullScreenVideo";
 import { setInTroVideoPlayTime } from "../store/introVideoSlice";
+import { RootState } from "../store/store";
+
+const TOTAL_VIDEOS = 4;
+const VIDEOS = Array.from(
+  { length: TOTAL_VIDEOS },
+  (_, i) => `videos/afk-hero-${i + 1}.mp4`,
+);
+
+const R = 8;
+const PORTAL_R = 18;
+
+function pointAlong(
+  from: { x: number; y: number },
+  to: { x: number; y: number },
+  distance: number,
+): { x: number; y: number } {
+  const dx = to.x - from.x;
+  const dy = to.y - from.y;
+  const len = Math.hypot(dx, dy);
+  if (len === 0) return { ...from };
+  const t = Math.max(0, Math.min(1, distance / len));
+  return { x: from.x + dx * t, y: from.y + dy * t };
+}
+
+function makeRoundedQuadPath(
+  tl: { x: number; y: number },
+  tr: { x: number; y: number },
+  br: { x: number; y: number },
+  bl: { x: number; y: number },
+  r: number,
+): string {
+  const maxR =
+    Math.min(
+      Math.hypot(tr.x - tl.x, tr.y - tl.y),
+      Math.hypot(br.x - tr.x, br.y - tr.y),
+      Math.hypot(bl.x - br.x, bl.y - br.y),
+      Math.hypot(tl.x - bl.x, tl.y - bl.y),
+    ) / 2;
+  const radius = Math.min(r, maxR);
+
+  const start = pointAlong(tl, tr, radius);
+  const corners = [
+    { corner: tr, prev: tl, next: br },
+    { corner: br, prev: tr, next: bl },
+    { corner: bl, prev: br, next: tl },
+    { corner: tl, prev: bl, next: tr },
+  ];
+
+  let path = `M ${start.x} ${start.y}`;
+  for (const { corner, prev, next } of corners) {
+    const edgeIn = pointAlong(corner, prev, radius);
+    const edgeOut = pointAlong(corner, next, radius);
+    path += ` L ${edgeIn.x} ${edgeIn.y}`;
+    path += ` Q ${corner.x} ${corner.y} ${edgeOut.x} ${edgeOut.y}`;
+  }
+  return `${path} Z`;
+}
+
+function makeRoundedRectPath(
+  tl: { x: number; y: number },
+  tr: { x: number; y: number },
+  br: { x: number; y: number },
+  bl: { x: number; y: number },
+  r: number,
+): string {
+  return [
+    `M ${tr.x - r} ${tl.y}`,
+    `L ${tr.x - r} ${tr.y}`,
+    `Q ${tr.x} ${tr.y} ${tr.x} ${tr.y + r}`,
+    `L ${br.x} ${br.y - r}`,
+    `Q ${br.x} ${br.y} ${br.x - r} ${br.y}`,
+    `L ${bl.x + r} ${bl.y}`,
+    `Q ${bl.x} ${bl.y} ${bl.x} ${bl.y - r}`,
+    `L ${tl.x} ${tl.y + r}`,
+    `Q ${tl.x} ${tl.y} ${tl.x + r} ${tl.y}`,
+    "Z",
+  ].join(" ");
+}
+
+function fullPath(w: number, h: number): string {
+  const pad = 3;
+  return makeRoundedRectPath(
+    { x: -pad, y: -pad },
+    { x: w + pad, y: -pad },
+    { x: w + pad, y: h + pad },
+    { x: -pad, y: h + pad },
+    R,
+  );
+}
+
+const HALF_W = 110;
+const HALF_H = 110;
+const HOVER_SCALE = 1.35;
+
+function miniPathCorners(
+  w: number,
+  h: number,
+  ox = 0,
+  oy = 0,
+  nx = 0,
+  ny = 0,
+  scale = 1,
+): [
+  { x: number; y: number },
+  { x: number; y: number },
+  { x: number; y: number },
+  { x: number; y: number },
+] {
+  const cx = w / 2 + ox;
+  const cy = h / 2 + oy;
+  const hw = HALF_W * scale;
+  const hh = HALF_H * scale;
+
+  const clampedNx = Math.max(-1, Math.min(1, nx));
+  const clampedNy = Math.max(-1, Math.min(1, ny));
+
+  const WIDTH_T = 0.32;
+  const EDGE_T = 0.25;
+
+  const corners = [
+    { sx: -1, sy: -1 },
+    { sx: 1, sy: -1 },
+    { sx: 1, sy: 1 },
+    { sx: -1, sy: 1 },
+  ];
+
+  const axisMag = Math.max(Math.abs(clampedNx), Math.abs(clampedNy));
+  const diagMag = Math.hypot(clampedNx, clampedNy);
+  const shearScale = axisMag > 0 ? axisMag / diagMag : 1;
+
+  return corners.map(({ sx, sy }) => {
+    const restX = cx + sx * hw;
+    const restY = cy + sy * hh;
+    const translateX = clampedNx * hw;
+    const translateY = clampedNy * hh;
+    const shearX = clampedNy * hw * WIDTH_T * sx * -sy * shearScale;
+    const shearY = clampedNx * hh * EDGE_T * sx * -sy * shearScale;
+
+    return {
+      x: restX + translateX + shearX,
+      y: restY + translateY + shearY,
+    };
+  }) as [
+    { x: number; y: number },
+    { x: number; y: number },
+    { x: number; y: number },
+    { x: number; y: number },
+  ];
+}
+
+function miniPath(
+  w: number,
+  h: number,
+  ox = 0,
+  oy = 0,
+  nx = 0,
+  ny = 0,
+  scale = 1,
+): string {
+  const [tl, tr, br, bl] = miniPathCorners(w, h, ox, oy, nx, ny, scale);
+  return makeRoundedQuadPath(tl, tr, br, bl, PORTAL_R);
+}
+
+function collapsedPath(w: number, h: number): string {
+  const cx = w / 2;
+  const cy = h / 2;
+  return makeRoundedRectPath(
+    { x: cx - 0.5, y: cy - 0.5 },
+    { x: cx + 0.5, y: cy - 0.5 },
+    { x: cx + 0.5, y: cy + 0.5 },
+    { x: cx - 0.5, y: cy + 0.5 },
+    0.1,
+  );
+}
+
+function interpPath(
+  w: number,
+  h: number,
+  t: number,
+  start: ReturnType<typeof miniPathCorners>,
+): string {
+  const pad = 3;
+  const [startTl, startTr, startBr, startBl] = start;
+
+  const lerp = (a: number, b: number) => a + (b - a) * t;
+
+  const tl = { x: lerp(startTl.x, -pad), y: lerp(startTl.y, -pad) };
+  const tr = { x: lerp(startTr.x, w + pad), y: lerp(startTr.y, -pad) };
+  const br = { x: lerp(startBr.x, w + pad), y: lerp(startBr.y, h + pad) };
+  const bl = { x: lerp(startBl.x, -pad), y: lerp(startBl.y, h + pad) };
+
+  const cornerR = PORTAL_R + (R - PORTAL_R) * t;
+  return makeRoundedQuadPath(tl, tr, br, bl, cornerR);
+}
 
 export default function Hero() {
   const dispatch = useDispatch();
   const inTroVideoPlayTime = useSelector(
-    (state: RootState) => state.introVideo.inTroVideoPlayTime
+    (state: RootState) => state.introVideo.inTroVideoPlayTime,
   );
 
-  const [currentIndex, setcurrentIndex] = useState(1);
-  const [hasClicked, sethasClicked] = useState(false);
-  const [isClickable, setIsClickable] = useState(true);
-  const [isLoading, setisLoading] = useState(true);
-  const [isIntroVideoPlaying, setisIntroVideoPlaying] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const isAnimating = useRef(false);
+  const videoRefs = useRef<(HTMLVideoElement | null)[]>([]);
+  const slideRefs = useRef<(HTMLDivElement | null)[]>([]);
+  const innerRefs = useRef<(HTMLDivElement | null)[]>([]);
+  const borderRefs = useRef<(SVGPathElement | null)[]>([]);
+  const sizeRef = useRef({ w: 1080, h: 910 });
 
-  const [loadedVideos, setloadedVideos] = useState(0);
-  const [delayedIndex, setDelayedIndex] = useState(currentIndex);
-  const totalVideos = 4;
-  const nextVideoRef = useRef<HTMLVideoElement | null>(null);
+  const activeRef = useRef(0);
+  const nextRef = useRef(1);
 
-  function handleMiniVideoClick() {
-    if (!isClickable) return; // Prevent click if not clickable
+  const [loadedVideos, setLoadedVideos] = useState(0);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isIntroVideoPlaying, setIsIntroVideoPlaying] = useState(false);
+  const [cursorPointer, setCursorPointer] = useState(false);
 
-    setIsClickable(false); // Disable clicking
-    setTimeout(() => setIsClickable(true), 1500); // Re-enable after 1 second
-
-    sethasClicked(true);
-    setcurrentIndex(upcomingVideoIndex);
-    // Delay the update for the main video
-    setTimeout(() => {
-      setDelayedIndex(upcomingVideoIndex);
-    }, 1300); // Delay of 0.3 seconds
-  }
-  function handleVideoLoad() {
-    setloadedVideos((prev) => prev + 1);
-  }
-  function getVideoSrc(index: number) {
-    return `videos/afk-hero-${index}.mp4`;
-  }
-  // 0%4 =0 +1 =1
-  // 1%4 = 1+1 =2
-  //... 4%4= 0 +1 = 1
-  const upcomingVideoIndex = (currentIndex % totalVideos) + 1;
   useEffect(() => {
-    if (loadedVideos === totalVideos - 1) {
-      setisLoading(false);
+    if (loadedVideos >= TOTAL_VIDEOS - 1) {
+      setIsLoading(false);
       if (inTroVideoPlayTime === 0) {
-        setisIntroVideoPlaying(true); // Play the intro video
+        setIsIntroVideoPlaying(true);
       }
     }
   }, [loadedVideos, inTroVideoPlayTime]);
+
   function handleIntroVideoEnd() {
-    setisIntroVideoPlaying(false); // Hide the intro after animation
+    setIsIntroVideoPlaying(false);
     dispatch(setInTroVideoPlayTime(1));
   }
 
-  useGSAP(
-    () => {
-      if (hasClicked) {
-        gsap.set("#next-video", {
-          visibility: "visible",
-          immediateRender: true,
-        });
-        gsap.to("#next-video", {
-          transformOrigin: "center center",
-          scale: 1,
-          width: "100%",
-          height: "100%",
-          duration: 1.2,
-          ease: "power1.inOut",
-          onStart: () => {
-            if (nextVideoRef.current) {
-              nextVideoRef.current.play();
-            }
-          },
-        });
-        gsap.from("#current-video", {
-          transformOrigin: "center center",
-          scale: 0,
-          duration: 1.5,
-          ease: "power1.inOut",
-        });
+  function handleVideoLoad() {
+    setLoadedVideos((prev) => prev + 1);
+  }
+
+  useEffect(() => {
+    function updateSize() {
+      if (containerRef.current) {
+        sizeRef.current = {
+          w: containerRef.current.offsetWidth,
+          h: containerRef.current.offsetHeight,
+        };
       }
+    }
+    updateSize();
+    window.addEventListener("resize", updateSize);
+    return () => window.removeEventListener("resize", updateSize);
+  }, []);
+
+  const applyPath = useCallback((index: number, path: string) => {
+    const content = slideRefs.current[index];
+    const border = borderRefs.current[index];
+    if (content) content.style.clipPath = `path("${path}")`;
+    if (border) border.setAttribute("d", path);
+  }, []);
+
+  const applyInner = useCallback(
+    (
+      index: number,
+      opts: {
+        scale?: number;
+        rotateX?: number;
+        rotateY?: number;
+        rotateZ?: number;
+      },
+    ) => {
+      const inner = innerRefs.current[index];
+      if (!inner) return;
+      const s = opts.scale ?? 1;
+      const rx = opts.rotateX ?? 0;
+      const ry = opts.rotateY ?? 0;
+      const rz = opts.rotateZ ?? 0;
+      inner.style.transform = `translate3d(0px, 0px, 0px) rotateX(${rx}rad) rotateY(${ry}rad) rotateZ(${rz}rad) scale(${s})`;
     },
-    { dependencies: [currentIndex], revertOnUpdate: true }
+    [],
   );
 
-  const [isMouseOver, setIsMouseOver] = useState(false); // Track whether mouse is over the video
-  const hoverElementRef = useRef<HTMLDivElement>(null);
-  const videoContainerRef = useRef<HTMLDivElement>(null);
-  const containerRef = useRef<HTMLDivElement>(null); // This will track mouse on the container
-  const [transformStyle, setTransformStyle] = useState<string>("");
-  const [transformStyle1, setTransformStyle1] = useState<string>("");
-  const [isMouseStopped, setIsMouseStopped] = useState(false);
-  const timeoutRef = useRef<number | null>(null);
-  // Tilt effect logic
+  const setupSlide = useCallback(
+    (index: number, role: "active" | "next" | "hidden") => {
+      const { w, h } = sizeRef.current;
+      const el = slideRefs.current[index]?.parentElement;
+      if (!el) return;
 
-  const element = hoverElementRef.current;
-  const container = containerRef.current;
+      if (role === "active") {
+        el.style.display = "";
+        el.style.zIndex = "1";
+        applyPath(index, fullPath(w, h));
+        applyInner(index, { scale: 1 });
+        videoRefs.current[index]?.play().catch(() => {});
+      } else if (role === "next") {
+        el.style.display = "";
+        el.style.zIndex = "2";
+        applyPath(index, miniPath(w, h, 0, 0, 0, 0, 0));
+        applyInner(index, { scale: 0.8 });
+      } else {
+        el.style.display = "none";
+        el.style.zIndex = "0";
+        applyPath(index, collapsedPath(w, h));
+        applyInner(index, { scale: 1 });
+        const video = videoRefs.current[index];
+        if (video) {
+          video.pause();
+          video.currentTime = 0;
+        }
+      }
+    },
+    [applyPath, applyInner],
+  );
 
-  const handleMouseMove: React.MouseEventHandler<HTMLDivElement> = (event) => {
-    if (!element || !container) return;
-
-    // Clear previous timeout and reset scaling when mouse moves
-    if (timeoutRef.current) {
-      clearTimeout(timeoutRef.current);
-    }
-    // Set the state to false when the mouse is moving
-    if (isMouseStopped) {
-      setIsMouseStopped(false); // Mouse has started moving again
-    }
-
-    // Set a timeout to detect when the mouse stops
-    timeoutRef.current = setTimeout(() => {
-      setIsMouseStopped(true);
-    }, 500); // 500ms delay to consider the mouse stopped
-    const { clientX, clientY } = event;
-    const { offsetLeft, offsetTop, offsetWidth, offsetHeight } = container;
-    const x = clientX - offsetLeft - offsetWidth / 2;
-    const y = clientY - offsetTop - offsetHeight / 2;
-    const tiltX = (y / offsetHeight) * 70; // Adjust the tilt factor as needed
-    const tiltY = (x / offsetWidth) * -70; // Adjust the tilt factor as needed
-    // Add scale factor to the transform
-
-    const newTransform = `translate(-50%, -50%) perspective(700px) rotateX(${tiltX}deg) rotateY(${tiltY}deg)  `; // Add scale for depth effect
-    const newTransform1 = `scale(1) `; // Add scale for depth effect
-    setTransformStyle1(newTransform1);
-    setTransformStyle(newTransform);
-  };
-  function handleMouseLeave() {
-    setIsMouseOver(false);
-    const newTransform1 = `translate(-50%, -50%) perspective(700px) `; // Add scale for depth effect
-    setTransformStyle1("scale(0.001) ");
-    setTransformStyle(newTransform1);
-  }
-  function handleMouseEnter() {
-    setIsMouseOver(true); // Mark mouse as over the video
-  }
-  function handleMouseLeaveCenter() {
-    setIsMouseOver(false); // Mark mouse as over the video
-  }
   useEffect(() => {
-    // console.log("isMouseStopped:", isMouseStopped); // This will log the updated value
-    if (isMouseStopped && !isMouseOver) {
-      const newTransform = `translate(-50%, -50%) perspective(700px) `; // Add scale for depth effect
-      setTransformStyle(newTransform);
-      setTransformStyle1(" scale(0.001)");
+    VIDEOS.forEach((_, i) => {
+      if (i === 0) setupSlide(i, "active");
+      else if (i === 1) setupSlide(i, "next");
+      else setupSlide(i, "hidden");
+    });
+  }, [setupSlide]);
+
+  const tiltTarget = useRef({ rx: 0, ry: 0 });
+  const tiltCurrent = useRef({ rx: 0, ry: 0 });
+  const rafRef = useRef<number>(0);
+  const isInsideZone = useRef(false);
+  const lastMouseRef = useRef({ px: 0, py: 0 });
+  const resumePortalRef = useRef<(() => void) | null>(null);
+  const portalAnimRef = useRef({ nx: 0, ny: 0, scale: HOVER_SCALE });
+
+  useEffect(() => {
+    const container = containerRef.current;
+    if (!container) return;
+
+    const MAX_TILT = 0.55;
+    const ZONE_W = HALF_W * HOVER_SCALE;
+    const ZONE_H = HALF_H * HOVER_SCALE;
+    const FILL_DURATION = 1200;
+    const DRAIN_DURATION = 800;
+    const BREATHE_AMP = 0.06;
+    const BREATHE_SPEED = 0.002;
+
+    let fillLevel = 0;
+    let phase: "idle" | "filling" | "draining" = "idle";
+    let breatheStart = 0;
+    let lastTick = performance.now();
+    let idleTimer: ReturnType<typeof setTimeout> | null = null;
+
+    function lerp(a: number, b: number, t: number) {
+      return a + (b - a) * t;
     }
-    // console.log("isMouseOver:", isMouseOver); // This will log the updated value
-  }, [isMouseStopped, isMouseOver]);
+
+    function tick(now: number) {
+      const dt = Math.min(now - lastTick, 50);
+      lastTick = now;
+
+      if (phase === "filling" || isInsideZone.current) {
+        fillLevel = Math.min(1, fillLevel + dt / FILL_DURATION);
+        if (fillLevel >= 1 && breatheStart === 0) {
+          breatheStart = now;
+        }
+      } else if (phase === "draining") {
+        fillLevel = Math.max(0, fillLevel - dt / DRAIN_DURATION);
+        if (fillLevel === 0) {
+          phase = "idle";
+          breatheStart = 0;
+        }
+      }
+
+      const tc = tiltCurrent.current;
+      const tt = tiltTarget.current;
+      tc.rx = lerp(tc.rx, tt.rx, 0.08);
+      tc.ry = lerp(tc.ry, tt.ry, 0.08);
+
+      const ni = nextRef.current;
+      const { w, h } = sizeRef.current;
+      const nx = tc.ry / MAX_TILT;
+      const ny = -tc.rx / MAX_TILT;
+
+      const breathe =
+        isInsideZone.current && fillLevel >= 1 && breatheStart > 0
+          ? 1 + Math.sin((now - breatheStart) * BREATHE_SPEED) * BREATHE_AMP
+          : 1;
+
+      const sc = fillLevel * HOVER_SCALE * breathe;
+      portalAnimRef.current = { nx, ny, scale: sc };
+      applyPath(ni, miniPath(w, h, 0, 0, nx, ny, sc));
+      applyInner(ni, { scale: 0.8 });
+
+      rafRef.current = requestAnimationFrame(tick);
+    }
+
+    function onStopMoving() {
+      if (!isInsideZone.current) {
+        phase = "draining";
+      }
+    }
+
+    function onMouseMove(e: MouseEvent) {
+      const rect = container!.getBoundingClientRect();
+      const px = e.clientX - rect.left;
+      const py = e.clientY - rect.top;
+      lastMouseRef.current = { px, py };
+
+      const { w, h } = sizeRef.current;
+      const nx = Math.max(-1, Math.min(1, (px - w / 2) / (w / 2)));
+      const ny = Math.max(-1, Math.min(1, (py - h / 2) / (h / 2)));
+      tiltTarget.current.ry = nx * MAX_TILT;
+      tiltTarget.current.rx = -ny * MAX_TILT;
+
+      const inZone =
+        Math.abs(px - w / 2) < ZONE_W && Math.abs(py - h / 2) < ZONE_H;
+
+      if (isAnimating.current) {
+        if (inZone) {
+          isInsideZone.current = true;
+          phase = "filling";
+          setCursorPointer(true);
+        } else {
+          isInsideZone.current = false;
+          setCursorPointer(false);
+        }
+        return;
+      }
+
+      phase = "filling";
+
+      if (idleTimer) clearTimeout(idleTimer);
+      idleTimer = setTimeout(onStopMoving, 80);
+
+      if (inZone) {
+        if (!isInsideZone.current) {
+          isInsideZone.current = true;
+          breatheStart = fillLevel >= 1 ? performance.now() : 0;
+          setCursorPointer(true);
+        }
+      } else {
+        if (isInsideZone.current) {
+          isInsideZone.current = false;
+          setCursorPointer(false);
+        }
+      }
+    }
+
+    resumePortalRef.current = () => {
+      const { px, py } = lastMouseRef.current;
+      const { w, h } = sizeRef.current;
+      const inZone =
+        Math.abs(px - w / 2) < ZONE_W && Math.abs(py - h / 2) < ZONE_H;
+
+      const nx = Math.max(-1, Math.min(1, (px - w / 2) / (w / 2)));
+      const ny = Math.max(-1, Math.min(1, (py - h / 2) / (h / 2)));
+      tiltTarget.current.ry = nx * MAX_TILT;
+      tiltTarget.current.rx = -ny * MAX_TILT;
+
+      fillLevel = 0;
+      breatheStart = 0;
+
+      if (inZone) {
+        isInsideZone.current = true;
+        phase = "filling";
+        setCursorPointer(true);
+      } else {
+        isInsideZone.current = false;
+        phase = "idle";
+        setCursorPointer(false);
+      }
+    };
+
+    function onMouseLeave() {
+      if (idleTimer) clearTimeout(idleTimer);
+      isInsideZone.current = false;
+      setCursorPointer(false);
+      tiltTarget.current = { rx: 0, ry: 0 };
+      phase = "draining";
+    }
+
+    rafRef.current = requestAnimationFrame(tick);
+    container.addEventListener("mousemove", onMouseMove);
+    container.addEventListener("mouseleave", onMouseLeave);
+    return () => {
+      cancelAnimationFrame(rafRef.current);
+      if (idleTimer) clearTimeout(idleTimer);
+      resumePortalRef.current = null;
+      container.removeEventListener("mousemove", onMouseMove);
+      container.removeEventListener("mouseleave", onMouseLeave);
+    };
+  }, [applyPath, applyInner]);
+
+  function handleClick() {
+    if (isAnimating.current) return;
+    if (!isInsideZone.current) return;
+
+    isAnimating.current = true;
+    isInsideZone.current = false;
+    setCursorPointer(false);
+
+    const { w, h } = sizeRef.current;
+    const oldActive = activeRef.current;
+    const newActive = nextRef.current;
+    const newNext = (newActive + 1) % VIDEOS.length;
+
+    const { nx, ny, scale } = portalAnimRef.current;
+    const expandStart = miniPathCorners(w, h, 0, 0, nx, ny, scale);
+
+    const oldVideo = videoRefs.current[oldActive];
+    if (oldVideo) {
+      oldVideo.pause();
+      oldVideo.currentTime = 0;
+    }
+
+    const expandEl = slideRefs.current[newActive]?.parentElement;
+    if (expandEl) {
+      expandEl.style.display = "";
+      expandEl.style.zIndex = "3";
+    }
+    videoRefs.current[newActive]?.play().catch(() => {});
+
+    setupSlide(newNext, "next");
+    nextRef.current = newNext;
+    const nextEl = slideRefs.current[newNext]?.parentElement;
+    if (nextEl) nextEl.style.zIndex = "4";
+    resumePortalRef.current?.();
+
+    applyPath(newActive, interpPath(w, h, 0, expandStart));
+
+    const proxy = { t: 0 };
+    gsap.to(proxy, {
+      t: 1,
+      duration: 1.2,
+      ease: "power2.inOut",
+      onUpdate: () => {
+        const t = proxy.t;
+        applyPath(newActive, interpPath(w, h, t, expandStart));
+        applyInner(newActive, {
+          scale: 0.8 + t * 0.2,
+          rotateX: 0,
+          rotateY: 0,
+          rotateZ: 0,
+        });
+      },
+      onComplete: () => {
+        setupSlide(oldActive, "hidden");
+
+        if (expandEl) expandEl.style.zIndex = "1";
+        applyPath(newActive, fullPath(w, h));
+        applyInner(newActive, { scale: 1 });
+
+        activeRef.current = newActive;
+
+        if (nextEl) nextEl.style.zIndex = "2";
+
+        isAnimating.current = false;
+      },
+    });
+  }
+
   return (
     <div
-      className="relative h-dvh w-screen overflow-x-hidden"
       ref={containerRef}
-      onMouseMove={handleMouseMove}
-      onMouseLeave={handleMouseLeave}
+      className="relative h-dvh w-screen overflow-hidden"
+      style={{ cursor: cursorPointer ? "pointer" : "default" }}
+      onClick={handleClick}
     >
       <FullScreenLoader isLoading={isLoading} />
       <FullScreenVideo
@@ -174,107 +572,90 @@ export default function Hero() {
 
       <section
         id="videoframe-section"
-        className="overflow-hidden relative z-10 w-full h-full"
+        className="relative z-10 h-full w-full overflow-hidden"
       >
         <div
           id="video-frame"
-          className=" relative z-10 h-dvh w-screen overflow-hidden rounded-sm bg-blue-75"
+          className="relative z-10 h-dvh w-screen overflow-hidden rounded-sm bg-blue-75"
         >
-          {/* Black layer with low opacity */}
-          <div className="absolute left-0 top-0 z-30 h-full w-full bg-black opacity-30 pointer-events-none"></div>
-          {/* Preload other unrendered  videos */}
-          {/* <div className="invisible">
-            <video
-              src={getVideoSrc(3)}
-              muted
-              preload="auto"
-              onLoadedData={handleVideoLoad}
-            />
-            <video
-              src={getVideoSrc(4)}
-              muted
-              preload="auto"
-              onLoadedData={handleVideoLoad}
-            />
-          </div> */}
-          <div>
-            {/* mivi video */}
+          <div className="pointer-events-none absolute left-0 top-0 z-30 h-full w-full bg-black opacity-30" />
+
+          {VIDEOS.map((src, i) => (
             <div
-              className={`absolute-center absolute z-50 size-64 cursor-pointer overflow-hidden rounded-xl scale-100  `}
-              ref={hoverElementRef}
-              onMouseMove={handleMouseEnter}
-              onMouseLeave={handleMouseLeaveCenter}
-              style={{
-                transform: transformStyle,
-                transition: "transform 0.1s linear",
-              }}
+              key={src}
+              className="absolute inset-0"
+              style={{ zIndex: i === 0 ? 1 : 0, display: i > 1 ? "none" : "" }}
             >
               <div
-                onClick={handleMiniVideoClick}
-                ref={videoContainerRef}
-                className="origin-center!  transition-all duration-500 ease-in scale-[0.001]   "
-                style={{
-                  transform: transformStyle1,
-                  transition: "transform 1s linear",
+                ref={(el) => {
+                  slideRefs.current[i] = el;
                 }}
+                className="absolute inset-0"
+                style={{ willChange: "clip-path" }}
               >
-                <video
-                  ref={nextVideoRef}
-                  src={getVideoSrc(upcomingVideoIndex)}
-                  loop
-                  muted
-                  id="current-video"
-                  className="size-64 origin-center object-cover object-center border rounded-xl border-slate-700 "
-                  onLoadedData={handleVideoLoad}
-                  preload="auto"
-                />
+                <div
+                  ref={(el) => {
+                    innerRefs.current[i] = el;
+                  }}
+                  className="absolute inset-0"
+                  style={{ transformOrigin: "center center" }}
+                >
+                  <video
+                    ref={(el) => {
+                      videoRefs.current[i] = el;
+                    }}
+                    className="absolute inset-0 h-full w-full object-cover"
+                    muted
+                    playsInline
+                    loop
+                    preload="auto"
+                    src={src}
+                    onLoadedData={handleVideoLoad}
+                  />
+                </div>
+                <svg
+                  className="pointer-events-none absolute inset-0 h-full w-full"
+                  stroke="#000"
+                  strokeWidth="2"
+                  fill="none"
+                  style={{ zIndex: 1 }}
+                >
+                  <path
+                    ref={(el) => {
+                      borderRefs.current[i] = el;
+                    }}
+                  />
+                </svg>
               </div>
             </div>
-            <video
-              ref={nextVideoRef}
-              src={getVideoSrc(currentIndex)}
-              loop
-              muted
-              id="next-video"
-              className="absolute-center invisible absolute z-20 size-64 object-cover object-center"
-              onLoadedData={handleVideoLoad}
-              preload="auto"
-            />
-            <video
-              src={getVideoSrc(
-                delayedIndex === totalVideos - 1 ? 1 : delayedIndex
-              )}
-              autoPlay
-              loop
-              muted
-              className="absolute left-0 top-0 size-full object-cover object-center"
-              onLoadedData={handleVideoLoad}
-              preload="auto"
-            />
-          </div>
-          <div className="absolute bottom-10 right-10 z-40 ">
+          ))}
+
+          <div className="absolute bottom-10 right-10 z-40">
             <img
               src="img/afk-logo.png"
-              className=" w-24 sm:w-40 md:w-64 lg:w-96 object-contain"
+              className="w-24 object-contain sm:w-40 md:w-64 lg:w-96"
+              alt="AFK Journey"
             />
           </div>
-          <div className="dow-content z-50 bottom-10 md:bottom-16 left-10 absolute  ">
+
+          <div className="dow-content absolute bottom-10 left-10 z-50 md:bottom-16">
             <a href="https://vda.afkjourney.com/pc_dl/com.farlightgames.igame.pc/a0f2a6caf27db1e96b33411c52f11817">
-              <img src="/img/dow_windows.png" className="imga dow-btn" />
+              <img src="/img/dow_windows.png" className="imga dow-btn" alt="Download for Windows" />
             </a>
             <a href="https://play.google.com/store/apps/details?id=com.farlightgames.igame.gp">
-              <img src="/img/dow_googleplay.png" className="imga dow-btn" />
+              <img src="/img/dow_googleplay.png" className="imga dow-btn" alt="Get it on Google Play" />
             </a>
             <a href="https://apps.apple.com/app/afk-journey/id1628970855">
-              <img src="/img/dow_appstore.png" className="imga dow-btn" />
+              <img src="/img/dow_appstore.png" className="imga dow-btn" alt="Download on the App Store" />
             </a>
           </div>
-          <div className="absolute left-0 top-0 z-40 size-full">
+
+          <div className="pointer-events-none absolute left-0 top-0 z-40 size-full">
             <div className="mt-24 px-6 sm:px-12">
-              <p className="noto  text-blue-100 md:text-2xl text-base uppercase">
+              <p className="noto text-base uppercase text-blue-100 md:text-2xl">
                 From the creator of Afk Arena
               </p>
-              <h1 className="noto hero-heading text-blue-100 ">
+              <h1 className="noto hero-heading text-blue-100">
                 New Journey <br /> is waiting
               </h1>
             </div>
@@ -282,10 +663,11 @@ export default function Hero() {
         </div>
       </section>
 
-      <div className="absolute bottom-10 right-10 invert ">
+      <div className="absolute bottom-10 right-10 invert">
         <img
           src="img/afk-logo.png"
-          className=" w-24 sm:w-40 md:w-64 lg:w-96 object-contain cursor-pointer"
+          className="w-24 cursor-pointer object-contain sm:w-40 md:w-64 lg:w-96"
+          alt="AFK Journey"
         />
       </div>
     </div>

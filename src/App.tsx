@@ -1,4 +1,5 @@
 import Hero from "./components/Hero";
+// import ZentryHero from "./components/ZentryHero";
 import About from "./components/About";
 import Navbar from "./components/Navbar";
 import Map from "./components/Map";
@@ -40,7 +41,7 @@ export default function App() {
   //screen size check to dynamic render
   const useMediaQuery = (query: string): boolean => {
     const [matches, setMatches] = useState(
-      () => window.matchMedia(query).matches
+      () => window.matchMedia(query).matches,
     );
 
     useEffect(() => {
@@ -64,6 +65,7 @@ export default function App() {
           element={
             <main className="relative min-h-screen w-screen overflow-x-hidden noto  ">
               <Navbar lenis={lenis} />
+              {/* <ZentryHero /> */}
               <Hero />
               <About />
               <Features />
