@@ -29,7 +29,6 @@ export default function UpdateSection() {
         const sectionHeight = stickySection.offsetHeight; // Get the sticky section height
         setSectionHeight(sectionHeight);
         setTotalStickyHeight(sectionHeight * 2); // Update totalStickyHeight
-        // console.log("Section Height:", sectionHeight);
       }
     };
 
@@ -44,82 +43,79 @@ export default function UpdateSection() {
   }, []);
 
   useEffect(() => {
-    if (sectionHeight > 0) {
-      const tl = gsap.timeline({
-        scrollTrigger: {
-          trigger: stickySectionRef.current,
-          start: "top top",
-          end: `+=${sectionHeight * 3} top`,
-          scrub: 0.5,
-          pin: true,
-          pinSpacing: true,
+    if (sectionHeight <= 0) return;
+
+    const tl = gsap.timeline({
+      scrollTrigger: {
+        trigger: stickySectionRef.current,
+        start: "top top",
+        end: `+=${sectionHeight * 3} top`,
+        scrub: 0.5,
+        pin: true,
+        pinSpacing: true,
+      },
+    });
+
+    // Start bgImg1 scale, bgImg2 clipPath, and bgImg2 scale animations at the same time
+    tl.to(".bgImg1", {
+      scale: 1.125,
+      duration: 1,
+      ease: "none",
+    })
+      .to(
+        ".bgImg2",
+        {
+          clipPath: "polygon(0% 0%, 100% 0%, 100% 100%, 0% 100% )",
+          duration: 1,
+          ease: "none",
         },
-      });
+        0,
+      ) // Start immediately with bgImg1 scale
+      .to(
+        ".bgImg2",
+        {
+          scale: 1.125,
+          duration: 2,
+          ease: "none",
+        },
+        0,
+      ) // Start immediately with bgImg1 scale and bgImg2 clipPath
 
-      // Start bgImg1 scale, bgImg2 clipPath, and bgImg2 scale animations at the same time
-      tl.to(".bgImg1", {
-        scale: 1.125,
-        duration: 1,
-        ease: "none",
-      })
-        .to(
-          ".bgImg2",
-          {
-            clipPath: "polygon(0% 0%, 100% 0%, 100% 100%, 0% 100% )",
-            duration: 1,
-            ease: "none",
-          },
-          0
-        ) // Start immediately with bgImg1 scale
-        .to(
-          ".bgImg2",
-          {
-            scale: 1.125,
-            duration: 2,
-            ease: "none",
-          },
-          0
-        ) // Start immediately with bgImg1 scale and bgImg2 clipPath
+      // bgImg3 clipPath animation, starts after bgImg1 and bgImg2 animations
+      .to(
+        ".bgImg3",
+        {
+          clipPath: "polygon(0% 0%, 100% 0%, 100% 100%, 0% 100% )",
 
-        // bgImg3 clipPath animation, starts after bgImg1 and bgImg2 animations
-        .to(
-          ".bgImg3",
-          {
-            clipPath: "polygon(0% 0%, 100% 0%, 100% 100%, 0% 100% )",
+          duration: 2,
+          ease: "none",
+        },
+        "-=1",
+      )
+      .to(
+        ".bgImg3",
+        {
+          scale: 1.8,
 
-            duration: 2,
-            ease: "none",
-          },
-          "-=1"
-        )
-        .to(
-          ".bgImg3",
-          {
-            scale: 1.8,
+          duration: 1,
+          ease: "none",
+        },
+        "-=2",
+      )
+      .to(
+        ".bgImg3",
+        {
+          scale: 1,
+          duration: 1,
+          ease: "none",
+        },
+        "-=1",
+      );
 
-            duration: 1,
-            ease: "none",
-          },
-          "-=2"
-        )
-        .to(
-          ".bgImg3",
-          {
-            scale: 1,
-            duration: 1,
-            ease: "none",
-          },
-          "-=1"
-        );
-
-      // Add event callbacks if needed
-      tl.eventCallback("onStart", () => {
-        console.log("Timeline started");
-      });
-      tl.eventCallback("onComplete", () => {
-        console.log("Timeline complete");
-      });
-    }
+    return () => {
+      tl.scrollTrigger?.kill();
+      tl.kill();
+    };
   }, [sectionHeight, totalStickyHeight]);
 
   return (

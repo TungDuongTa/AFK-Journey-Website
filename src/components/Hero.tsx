@@ -257,20 +257,6 @@ export default function Hero() {
     setLoadedVideos((prev) => prev + 1);
   }
 
-  useEffect(() => {
-    function updateSize() {
-      if (containerRef.current) {
-        sizeRef.current = {
-          w: containerRef.current.offsetWidth,
-          h: containerRef.current.offsetHeight,
-        };
-      }
-    }
-    updateSize();
-    window.addEventListener("resize", updateSize);
-    return () => window.removeEventListener("resize", updateSize);
-  }, []);
-
   const applyPath = useCallback((index: number, path: string) => {
     const content = slideRefs.current[index];
     const border = borderRefs.current[index];
@@ -331,14 +317,6 @@ export default function Hero() {
     [applyPath, applyInner],
   );
 
-  useEffect(() => {
-    VIDEOS.forEach((_, i) => {
-      if (i === 0) setupSlide(i, "active");
-      else if (i === 1) setupSlide(i, "next");
-      else setupSlide(i, "hidden");
-    });
-  }, [setupSlide]);
-
   const tiltTarget = useRef({ rx: 0, ry: 0 });
   const tiltCurrent = useRef({ rx: 0, ry: 0 });
   const rafRef = useRef<number>(0);
@@ -346,6 +324,53 @@ export default function Hero() {
   const lastMouseRef = useRef({ px: 0, py: 0 });
   const resumePortalRef = useRef<(() => void) | null>(null);
   const portalAnimRef = useRef({ nx: 0, ny: 0, scale: HOVER_SCALE });
+
+  useEffect(() => {
+    function syncSize() {
+      if (!containerRef.current) return;
+      sizeRef.current = {
+        w: containerRef.current.offsetWidth,
+        h: containerRef.current.offsetHeight,
+      };
+    }
+
+    function refreshPaths() {
+      // Mid-transition paths are driven by GSAP — only refresh when idle
+      if (isAnimating.current) return;
+
+      const { w, h } = sizeRef.current;
+      const active = activeRef.current;
+      const next = nextRef.current;
+      const { nx, ny, scale } = portalAnimRef.current;
+
+      VIDEOS.forEach((_, i) => {
+        if (i === active) {
+          applyPath(i, fullPath(w, h));
+        } else if (i === next) {
+          applyPath(i, miniPath(w, h, 0, 0, nx, ny, scale));
+        } else {
+          applyPath(i, collapsedPath(w, h));
+        }
+      });
+    }
+
+    function onResize() {
+      syncSize();
+      refreshPaths();
+    }
+
+    syncSize();
+    window.addEventListener("resize", onResize);
+    return () => window.removeEventListener("resize", onResize);
+  }, [applyPath]);
+
+  useEffect(() => {
+    VIDEOS.forEach((_, i) => {
+      if (i === 0) setupSlide(i, "active");
+      else if (i === 1) setupSlide(i, "next");
+      else setupSlide(i, "hidden");
+    });
+  }, [setupSlide]);
 
   useEffect(() => {
     const container = containerRef.current;
@@ -620,7 +645,7 @@ export default function Hero() {
 
       <div className="pointer-events-none absolute bottom-10 right-10 z-[5] invert">
         <img
-          src="img/afk-logo.png"
+          src="/img/afk-logo.png"
           className="w-24 object-contain sm:w-40 md:w-64 lg:w-96"
           alt=""
           aria-hidden
@@ -689,7 +714,7 @@ export default function Hero() {
 
           <div className="absolute bottom-10 right-10 z-40">
             <img
-              src="img/afk-logo.png"
+              src="/img/afk-logo.png"
               className="w-24 object-contain sm:w-40 md:w-64 lg:w-96"
               alt="AFK Journey"
             />
