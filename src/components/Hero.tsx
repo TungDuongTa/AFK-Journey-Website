@@ -1,11 +1,15 @@
 import { useCallback, useEffect, useRef, useState } from "react";
+import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
+import { ScrollTrigger } from "gsap/all";
 import { useDispatch, useSelector } from "react-redux";
 
 import FullScreenLoader from "./FullScreenLoader";
 import FullScreenVideo from "./FullScreenVideo";
 import { setInTroVideoPlayTime } from "../store/introVideoSlice";
 import { RootState } from "../store/store";
+
+gsap.registerPlugin(ScrollTrigger);
 
 const TOTAL_VIDEOS = 4;
 const VIDEOS = Array.from(
@@ -98,7 +102,12 @@ function fullPath(w: number, h: number): string {
 const HALF_W = 110;
 const HALF_H = 110;
 const HOVER_SCALE = 1.35;
+const MAX_TILT = 1;
+const PERSPECTIVE = 1000;
+// Slide whole portal toward cursor after tilt (fraction of half-size)
+const SHIFT_T = 1;
 
+// Viewer holds a glass plane: rotate toward cursor, then slide it that way too.
 function miniPathCorners(
   w: number,
   h: number,
@@ -121,8 +130,16 @@ function miniPathCorners(
   const clampedNx = Math.max(-1, Math.min(1, nx));
   const clampedNy = Math.max(-1, Math.min(1, ny));
 
-  const WIDTH_T = 0.32;
-  const EDGE_T = 0.25;
+  // Mouse right → right edge toward camera; mouse up (ny<0) → top edge toward camera
+  const rotY = -clampedNx * MAX_TILT;
+  const rotX = clampedNy * MAX_TILT;
+  const cosY = Math.cos(rotY);
+  const sinY = Math.sin(rotY);
+  const cosX = Math.cos(rotX);
+  const sinX = Math.sin(rotX);
+
+  const shiftX = clampedNx * hw * SHIFT_T;
+  const shiftY = clampedNy * hh * SHIFT_T;
 
   const corners = [
     { sx: -1, sy: -1 },
@@ -131,21 +148,21 @@ function miniPathCorners(
     { sx: -1, sy: 1 },
   ];
 
-  const axisMag = Math.max(Math.abs(clampedNx), Math.abs(clampedNy));
-  const diagMag = Math.hypot(clampedNx, clampedNy);
-  const shearScale = axisMag > 0 ? axisMag / diagMag : 1;
-
   return corners.map(({ sx, sy }) => {
-    const restX = cx + sx * hw;
-    const restY = cy + sy * hh;
-    const translateX = clampedNx * hw;
-    const translateY = clampedNy * hh;
-    const shearX = clampedNy * hw * WIDTH_T * sx * -sy * shearScale;
-    const shearY = clampedNx * hh * EDGE_T * sx * -sy * shearScale;
+    const x = sx * hw;
+    const y = sy * hh;
+    const z = 0;
+
+    const x1 = x * cosY + z * sinY;
+    const z1 = -x * sinY + z * cosY;
+    const y2 = y * cosX - z1 * sinX;
+    const z2 = y * sinX + z1 * cosX;
+
+    const perspScale = PERSPECTIVE / (PERSPECTIVE + z2);
 
     return {
-      x: restX + translateX + shearX,
-      y: restY + translateY + shearY,
+      x: cx + x1 * perspScale + shiftX,
+      y: cy + y2 * perspScale + shiftY,
     };
   }) as [
     { x: number; y: number },
@@ -334,19 +351,23 @@ export default function Hero() {
     const container = containerRef.current;
     if (!container) return;
 
-    const MAX_TILT = 0.55;
     const ZONE_W = HALF_W * HOVER_SCALE;
     const ZONE_H = HALF_H * HOVER_SCALE;
     const FILL_DURATION = 1200;
+    const NEW_PORTAL_FILL_DURATION = 1000;
     const DRAIN_DURATION = 800;
     const BREATHE_AMP = 0.06;
     const BREATHE_SPEED = 0.002;
 
     let fillLevel = 0;
+    let fillDuration = FILL_DURATION;
+    let fillStartTime = 0;
+    let fillStartLevel = 0;
     let phase: "idle" | "filling" | "draining" = "idle";
     let breatheStart = 0;
     let lastTick = performance.now();
     let idleTimer: ReturnType<typeof setTimeout> | null = null;
+    const fillEase = gsap.parseEase("power2.out");
 
     function lerp(a: number, b: number, t: number) {
       return a + (b - a) * t;
@@ -357,11 +378,17 @@ export default function Hero() {
       lastTick = now;
 
       if (phase === "filling" || isInsideZone.current) {
-        fillLevel = Math.min(1, fillLevel + dt / FILL_DURATION);
+        if (fillStartTime === 0) {
+          fillStartTime = now;
+          fillStartLevel = fillLevel;
+        }
+        const t = Math.min(1, (now - fillStartTime) / fillDuration);
+        fillLevel = fillStartLevel + (1 - fillStartLevel) * fillEase(t);
         if (fillLevel >= 1 && breatheStart === 0) {
           breatheStart = now;
         }
       } else if (phase === "draining") {
+        fillStartTime = 0;
         fillLevel = Math.max(0, fillLevel - dt / DRAIN_DURATION);
         if (fillLevel === 0) {
           phase = "idle";
@@ -457,6 +484,8 @@ export default function Hero() {
 
       fillLevel = 0;
       breatheStart = 0;
+      fillStartTime = 0;
+      fillDuration = NEW_PORTAL_FILL_DURATION;
 
       if (inZone) {
         isInsideZone.current = true;
@@ -488,6 +517,25 @@ export default function Hero() {
       container.removeEventListener("mouseleave", onMouseLeave);
     };
   }, [applyPath, applyInner]);
+
+  useGSAP(() => {
+    gsap.set("#video-frame", {
+      clipPath: "polygon(14% 0%, 72% 0%, 90% 90%, 0% 100%)",
+      borderRadius: "0 0 40% 10%",
+    });
+
+    gsap.from("#video-frame", {
+      clipPath: "polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%)",
+      borderRadius: "0 0 0 0",
+      ease: "power1.in",
+      scrollTrigger: {
+        trigger: "#video-frame",
+        start: "center center",
+        end: "bottom center",
+        scrub: true,
+      },
+    });
+  }, []);
 
   function handleClick() {
     if (isAnimating.current) return;
@@ -530,7 +578,7 @@ export default function Hero() {
     gsap.to(proxy, {
       t: 1,
       duration: 1.2,
-      ease: "power2.inOut",
+      ease: "power4.out",
       onUpdate: () => {
         const t = proxy.t;
         applyPath(newActive, interpPath(w, h, t, expandStart));
@@ -569,6 +617,15 @@ export default function Hero() {
         isPlaying={isIntroVideoPlaying}
         onEnded={handleIntroVideoEnd}
       />
+
+      <div className="pointer-events-none absolute bottom-10 right-10 z-[5] invert">
+        <img
+          src="img/afk-logo.png"
+          className="w-24 object-contain sm:w-40 md:w-64 lg:w-96"
+          alt=""
+          aria-hidden
+        />
+      </div>
 
       <section
         id="videoframe-section"
@@ -640,13 +697,25 @@ export default function Hero() {
 
           <div className="dow-content absolute bottom-10 left-10 z-50 md:bottom-16">
             <a href="https://vda.afkjourney.com/pc_dl/com.farlightgames.igame.pc/a0f2a6caf27db1e96b33411c52f11817">
-              <img src="/img/dow_windows.png" className="imga dow-btn" alt="Download for Windows" />
+              <img
+                src="/img/dow_windows.png"
+                className="imga dow-btn"
+                alt="Download for Windows"
+              />
             </a>
             <a href="https://play.google.com/store/apps/details?id=com.farlightgames.igame.gp">
-              <img src="/img/dow_googleplay.png" className="imga dow-btn" alt="Get it on Google Play" />
+              <img
+                src="/img/dow_googleplay.png"
+                className="imga dow-btn"
+                alt="Get it on Google Play"
+              />
             </a>
             <a href="https://apps.apple.com/app/afk-journey/id1628970855">
-              <img src="/img/dow_appstore.png" className="imga dow-btn" alt="Download on the App Store" />
+              <img
+                src="/img/dow_appstore.png"
+                className="imga dow-btn"
+                alt="Download on the App Store"
+              />
             </a>
           </div>
 
@@ -662,14 +731,6 @@ export default function Hero() {
           </div>
         </div>
       </section>
-
-      <div className="absolute bottom-10 right-10 invert">
-        <img
-          src="img/afk-logo.png"
-          className="w-24 cursor-pointer object-contain sm:w-40 md:w-64 lg:w-96"
-          alt="AFK Journey"
-        />
-      </div>
     </div>
   );
 }

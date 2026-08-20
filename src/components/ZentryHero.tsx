@@ -1,5 +1,9 @@
 import { useEffect, useRef, useState, useCallback } from "react";
+import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
+import { ScrollTrigger } from "gsap/all";
+
+gsap.registerPlugin(ScrollTrigger);
 
 const VIDEOS = [
   "videos/hero-cut-1.mp4",
@@ -113,7 +117,12 @@ function miniPathCorners(
   nx = 0,
   ny = 0,
   scale = 1,
-): [{ x: number; y: number }, { x: number; y: number }, { x: number; y: number }, { x: number; y: number }] {
+): [
+  { x: number; y: number },
+  { x: number; y: number },
+  { x: number; y: number },
+  { x: number; y: number },
+] {
   const cx = w / 2 + ox;
   const cy = h / 2 + oy;
   const hw = HALF_W * scale;
@@ -148,7 +157,12 @@ function miniPathCorners(
       x: restX + translateX + shearX,
       y: restY + translateY + shearY,
     };
-  }) as [{ x: number; y: number }, { x: number; y: number }, { x: number; y: number }, { x: number; y: number }];
+  }) as [
+    { x: number; y: number },
+    { x: number; y: number },
+    { x: number; y: number },
+    { x: number; y: number },
+  ];
 }
 
 function miniPath(
@@ -491,6 +505,25 @@ export default function ZentryHero() {
     };
   }, [applyPath, applyInner]);
 
+  useGSAP(() => {
+    gsap.set("#video-frame", {
+      clipPath: "polygon(14% 0%, 72% 0%, 90% 90%, 0% 100%)",
+      borderRadius: "0 0 40% 10%",
+    });
+
+    gsap.from("#video-frame", {
+      clipPath: "polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%)",
+      borderRadius: "0 0 0 0",
+      ease: "power1.inOut",
+      scrollTrigger: {
+        trigger: "#video-frame",
+        start: "center center",
+        end: "bottom center",
+        scrub: true,
+      },
+    });
+  }, []);
+
   function handleClick() {
     if (isAnimating.current) return;
     if (!isInsideZone.current) return; // only clickable inside portal zone
@@ -580,56 +613,62 @@ export default function ZentryHero() {
         </div>
       )}
 
-      {VIDEOS.map((src, i) => (
-        <div
-          key={i}
-          className="absolute inset-0"
-          style={{ zIndex: i === 0 ? 1 : 0, display: i > 1 ? "none" : "" }}
-        >
+      <h1 className="special-font pointer-events-none absolute bottom-5 right-5 z-[5] text-5xl font-black uppercase text-black sm:text-7xl md:text-9xl">
+        G<b>a</b>ming
+      </h1>
+
+      <div id="video-frame" className="absolute inset-0 z-10">
+        {VIDEOS.map((src, i) => (
           <div
-            ref={(el) => {
-              slideRefs.current[i] = el;
-            }}
+            key={i}
             className="absolute inset-0"
-            style={{ willChange: "clip-path" }}
+            style={{ zIndex: i === 0 ? 1 : 0, display: i > 1 ? "none" : "" }}
           >
             <div
               ref={(el) => {
-                innerRefs.current[i] = el;
+                slideRefs.current[i] = el;
               }}
               className="absolute inset-0"
-              style={{ transformOrigin: "center center" }}
+              style={{ willChange: "clip-path" }}
             >
-              <video
+              <div
                 ref={(el) => {
-                  videoRefs.current[i] = el;
+                  innerRefs.current[i] = el;
                 }}
-                className="absolute inset-0 h-full w-full object-cover"
-                muted
-                playsInline
-                loop
-                preload="metadata"
-                poster={POSTERS[i]}
-                src={src}
-                onLoadedData={() => setLoadedCount((c) => c + 1)}
-              />
+                className="absolute inset-0"
+                style={{ transformOrigin: "center center" }}
+              >
+                <video
+                  ref={(el) => {
+                    videoRefs.current[i] = el;
+                  }}
+                  className="absolute inset-0 h-full w-full object-cover"
+                  muted
+                  playsInline
+                  loop
+                  preload="metadata"
+                  poster={POSTERS[i]}
+                  src={src}
+                  onLoadedData={() => setLoadedCount((c) => c + 1)}
+                />
+              </div>
+              <svg
+                className="absolute inset-0 h-full w-full pointer-events-none"
+                stroke="#000"
+                strokeWidth="2"
+                fill="none"
+                style={{ zIndex: 1 }}
+              >
+                <path
+                  ref={(el) => {
+                    borderRefs.current[i] = el;
+                  }}
+                />
+              </svg>
             </div>
-            <svg
-              className="absolute inset-0 h-full w-full pointer-events-none"
-              stroke="#000"
-              strokeWidth="2"
-              fill="none"
-              style={{ zIndex: 1 }}
-            >
-              <path
-                ref={(el) => {
-                  borderRefs.current[i] = el;
-                }}
-              />
-            </svg>
           </div>
-        </div>
-      ))}
+        ))}
+      </div>
 
       <div className="absolute inset-0 z-40 flex flex-col justify-between pointer-events-none">
         <div className="mt-24 px-5 sm:px-10">
@@ -646,10 +685,6 @@ export default function ZentryHero() {
           </h1>
         </div>
       </div>
-
-      <h1 className="special-font absolute bottom-5 right-5 text-black text-5xl sm:text-7xl md:text-9xl font-black uppercase pointer-events-none">
-        G<b>a</b>ming
-      </h1>
     </div>
   );
 }
